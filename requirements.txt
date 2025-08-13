@@ -1,0 +1,58 @@
+# Core Streamlit and web framework
+streamlit>=1.28.0
+
+# RAG and Vector Search
+faiss-cpu>=1.7.4
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-google-genai>=0.0.6
+
+# Embeddings and Transformers
+sentence-transformers>=2.2.2
+transformers>=4.30.0
+torch>=2.0.0
+
+# BM25 Search
+rank-bm25>=0.2.2
+
+# Google AI
+google-generativeai>=0.3.0
+
+# HuggingFace Integration
+huggingface-hub>=0.17.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# HTTP Requests for Google Drive downloads
+requests>=2.31.0
+
+# File handling and path utilities
+pathlib2>=2.3.7
+
+# Utility libraries
+python-dotenv>=1.0.0
+typing-extensions>=4.5.0
+
+# JSON handling (usually built-in, but ensuring compatibility)
+# Already included in Python standard library
+
+# Temporary file handling (for downloads)
+# Already included in Python standard library
+
+# Optional: For better performance and caching
+# streamlit-aggrid>=0.3.4  # Uncomment for advanced data tables
+
+# Optional: For better tokenization (uncomment if needed)
+# nltk>=3.8
+# spacy>=3.6.0
+
+# Optional: For document processing (uncomment if needed)
+# pypdf>=3.15.0
+# python-docx>=0.8.11
+# beautifulsoup4>=4.12.0
+
+# Optional: For advanced plotting (uncomment if you want more charts)
+# plotly>=5.17.0
+# altair>=5.0.0
