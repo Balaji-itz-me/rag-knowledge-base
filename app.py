@@ -483,21 +483,27 @@ def query_rag_system(question: str, vectorstore, bm25, bm25_docs, bm25_sources,
         raw_sources = []
         for doc in docs:
             source = doc.metadata.get("source", "Unknown")
-            # Clean up source path to get just the filename
-            clean_source = os.path.basename(source) if source != "Unknown" else "Unknown"
-            raw_sources.append(clean_source)
+            raw_sources.append(source)
         
         # Remove duplicates while preserving order
         unique_sources = list(OrderedDict.fromkeys(raw_sources))
         
-        # Format sources - convert filenames to URLs where possible
+        # Format sources - handle both URLs and filenames
         sources = []
         for source in unique_sources:
-            # Map known filenames to their URLs
-            if source in SOURCE_URL_MAP:
-                sources.append(SOURCE_URL_MAP[source])
-            elif source != "Unknown":
+            if source == "Unknown":
+                continue
+            elif source.startswith("http"):
+                # Source is already a URL, use it directly
                 sources.append(source)
+            else:
+                # Source is a file path, extract filename and map to URL if possible
+                clean_source = os.path.basename(source)
+                if clean_source in SOURCE_URL_MAP:
+                    sources.append(SOURCE_URL_MAP[clean_source])
+                else:
+                    # If no mapping found, use the filename
+                    sources.append(clean_source)
         
         # Remove any empty sources
         sources = [s for s in sources if s and s.strip()]
@@ -1012,6 +1018,7 @@ if st.sidebar.toggle("🔍 Debug Info", value=False):
         "Query History Count": len(st.session_state.query_history),
         "Evaluation Results": len(st.session_state.evaluation_results)
     })
+
 
 
 
