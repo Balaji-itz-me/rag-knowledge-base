@@ -140,6 +140,44 @@ GOLD_DATA = [
 st.markdown('<h1 class="main-header">🔍 Hybrid RAG System</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">BM25 + FAISS Vector Search with Cross-Encoder Reranking & LLM Judge</p>', unsafe_allow_html=True)
 
+# Knowledge Base Information
+st.markdown("---")
+with st.container():
+    st.markdown("### 📚 Knowledge Base Coverage")
+    
+    st.info("""
+    **🎯 This RAG-powered QA chatbot answers questions exclusively from these four curated sources:**
+    
+    **1. GenAI Platform Engineering** 🏗️
+    • Building scalable GenAI platforms and infrastructure
+    • Platform design patterns and best practices
+    • Production deployment strategies for AI systems
+    • Engineering challenges in generative AI applications
+    
+    **2. LLM Hallucination Analysis** 🧠
+    • Understanding and detecting hallucinations in large language models
+    • Mitigation strategies and evaluation techniques
+    • Factual accuracy in AI-generated content
+    • Research insights on model reliability
+    
+    **3. ColBERT & Late Interaction** ⚡
+    • Advanced retrieval techniques using ColBERT architecture
+    • Late interaction mechanisms for efficient search
+    • Dense retrieval vs traditional search methods
+    • Performance optimization in information retrieval
+    
+    **4. Embedding-Based Search Systems** 🔍
+    • Building production-scale embedding search at Quora
+    • Vector similarity search implementation
+    • Semantic search architecture and scaling
+    • Real-world deployment of embedding systems
+    
+    ℹ️ **Note**: The system will only provide answers based on content from these sources and will indicate when information is not available in the knowledge base.
+    """)
+
+st.markdown("---")
+
+
 # API Key Management
 def get_api_key():
     """Get API key from secrets or environment"""
@@ -1018,6 +1056,7 @@ if st.sidebar.toggle("🔍 Debug Info", value=False):
         "Query History Count": len(st.session_state.query_history),
         "Evaluation Results": len(st.session_state.evaluation_results)
     })
+
 
 
 
