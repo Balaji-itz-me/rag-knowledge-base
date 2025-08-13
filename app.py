@@ -969,7 +969,7 @@ st.markdown(
     <div style="text-align: center; color: #666; padding: 1rem;">
         <p>🚀 <strong>Hybrid RAG System</strong> - Built with Streamlit</p>
         <p>💡 Powered by BM25 + FAISS + Cross-Encoder + LLM Judge</p>
-        <p>🔗 <a href="https://github.com/your-username/hybrid-rag-app" target="_blank">GitHub Repository</a></p>
+        <p>🔗 <a href="https://github.com/Balaji-itz-me/RAG-hybrid-retrieval-evaluator/edit/main/app.py" target="_blank">GitHub Repository</a></p>
     </div>
     """, 
     unsafe_allow_html=True
@@ -986,3 +986,4 @@ if st.sidebar.toggle("🔍 Debug Info", value=False):
         "Query History Count": len(st.session_state.query_history),
         "Evaluation Results": len(st.session_state.evaluation_results)
     })
+
