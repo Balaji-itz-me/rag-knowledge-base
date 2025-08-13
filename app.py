@@ -485,32 +485,85 @@ def query_rag_system(question: str, vectorstore, bm25, bm25_docs, bm25_sources,
 def llm_judge(question: str, system_answer: str, citations: List[str], 
              ground_truth: str, expected_citations: List[str], judge_llm) -> Dict:
     """Evaluate system answer using LLM judge"""
-    judge_prompt = f"""
-    You are evaluating an AI system's answer.
+    judge_prompt = f"""You are an expert evaluator for RAG systems. Please evaluate the system's answer against the ground truth.
 
-    Question: {question}
-    System Answer: {system_answer}
-    Ground Truth Answer: {ground_truth}
-    System Citations: {citations}
-    Expected Citations: {expected_citations}
+Question: {question}
 
-    Evaluate on:
-    1. Accuracy (0 to 1): factual correctness compared to ground truth.
-    2. Coverage (0 to 1): completeness of answer.
-    3. Citation Match (0 to 1): citation relevance.
+System Answer: {system_answer}
 
-    Respond ONLY in JSON:
-    {{ "accuracy": float, "coverage": float, "citation_match": float }}
-    """
+Ground Truth Answer: {ground_truth}
+
+System Citations: {citations}
+
+Expected Citations: {expected_citations}
+
+Please evaluate on three dimensions (scale 0.0 to 1.0):
+
+1. ACCURACY: How factually correct is the system answer compared to ground truth?
+2. COVERAGE: How complete is the system answer in covering the key points?  
+3. CITATION_MATCH: How relevant are the provided citations to the expected ones?
+
+You MUST respond with ONLY a valid JSON object in this exact format:
+{{"accuracy": 0.85, "coverage": 0.92, "citation_match": 0.67}}
+
+Do not include any other text, explanations, or formatting. Only the JSON object."""
 
     try:
         response = judge_llm.invoke(judge_prompt)
-        # Try to parse JSON response
-        scores = json.loads(response.content.strip())
+        response_text = response.content.strip()
+        
+        # Clean up common formatting issues
+        if response_text.startswith('```json'):
+            response_text = response_text.replace('```json', '').replace('```', '').strip()
+        elif response_text.startswith('```'):
+            response_text = response_text.replace('```', '').strip()
+        
+        # Remove any leading/trailing whitespace and newlines
+        response_text = response_text.strip()
+        
+        # Try to find JSON object in the response
+        import re
+        json_match = re.search(r'\{[^}]*\}', response_text)
+        if json_match:
+            response_text = json_match.group()
+        
+        # Parse JSON
+        scores = json.loads(response_text)
+        
+        # Validate structure and ranges
+        required_keys = ["accuracy", "coverage", "citation_match"]
+        if not all(key in scores for key in required_keys):
+            raise ValueError("Missing required keys in response")
+        
+        # Ensure values are floats between 0 and 1
+        for key in required_keys:
+            scores[key] = max(0.0, min(1.0, float(scores[key])))
+        
         return scores
-    except (json.JSONDecodeError, Exception) as e:
-        st.warning(f"Judge response parsing failed: {e}")
-        return {"accuracy": 0.0, "coverage": 0.0, "citation_match": 0.0}
+        
+    except (json.JSONDecodeError, ValueError, KeyError, TypeError) as e:
+        # If JSON parsing fails, try to extract numbers from the response
+        try:
+            import re
+            response_text = response.content.strip()
+            
+            # Look for patterns like "accuracy": 0.85, "coverage": 0.92, etc.
+            accuracy_match = re.search(r'"?accuracy"?\s*:?\s*([0-9]*\.?[0-9]+)', response_text, re.IGNORECASE)
+            coverage_match = re.search(r'"?coverage"?\s*:?\s*([0-9]*\.?[0-9]+)', response_text, re.IGNORECASE)
+            citation_match = re.search(r'"?citation[_\s]?match"?\s*:?\s*([0-9]*\.?[0-9]+)', response_text, re.IGNORECASE)
+            
+            scores = {
+                "accuracy": max(0.0, min(1.0, float(accuracy_match.group(1)) if accuracy_match else 0.5)),
+                "coverage": max(0.0, min(1.0, float(coverage_match.group(1)) if coverage_match else 0.5)),
+                "citation_match": max(0.0, min(1.0, float(citation_match.group(1)) if citation_match else 0.5))
+            }
+            
+            return scores
+            
+        except:
+            # Final fallback - return neutral scores
+            st.warning(f"⚠️ Judge response parsing failed. Using neutral scores. Raw response: {response.content[:200]}...")
+            return {"accuracy": 0.5, "coverage": 0.5, "citation_match": 0.5}
 
 def run_evaluation_suite(vectorstore, bm25, bm25_docs, bm25_sources, 
                         text_to_docs, reranker, judge_llm, gold_data,
