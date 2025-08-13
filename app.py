@@ -467,13 +467,40 @@ def query_rag_system(question: str, vectorstore, bm25, bm25_docs, bm25_sources,
     response = llm.invoke(formatted_prompt)
     answer_text = response.content.strip()
     
-    # Check for fallback response
-    fallback_msg = "i couldn't find anything in my knowledge base about that topic"
-    if fallback_msg.lower() in answer_text.lower():
+    # Check for fallback response - be more specific about the fallback message
+    fallback_phrases = [
+        "i couldn't find anything in my knowledge base about that topic",
+        "i can only answer questions related to ai, rag",
+        "the answer is not in the context"
+    ]
+    
+    is_fallback = any(phrase.lower() in answer_text.lower() for phrase in fallback_phrases)
+    
+    if is_fallback:
         sources = []
     else:
-        sources = list(OrderedDict.fromkeys(os.path.basename(doc.metadata.get("source","Unknown")) for doc in docs))
-        sources = format_sources(sources)
+        # Get unique sources from retrieved documents
+        raw_sources = []
+        for doc in docs:
+            source = doc.metadata.get("source", "Unknown")
+            # Clean up source path to get just the filename
+            clean_source = os.path.basename(source) if source != "Unknown" else "Unknown"
+            raw_sources.append(clean_source)
+        
+        # Remove duplicates while preserving order
+        unique_sources = list(OrderedDict.fromkeys(raw_sources))
+        
+        # Format sources - convert filenames to URLs where possible
+        sources = []
+        for source in unique_sources:
+            # Map known filenames to their URLs
+            if source in SOURCE_URL_MAP:
+                sources.append(SOURCE_URL_MAP[source])
+            elif source != "Unknown":
+                sources.append(source)
+        
+        # Remove any empty sources
+        sources = [s for s in sources if s and s.strip()]
     
     return {
         "answer": answer_text, 
@@ -481,7 +508,6 @@ def query_rag_system(question: str, vectorstore, bm25, bm25_docs, bm25_sources,
         "retrieved_docs": docs,
         "candidates": candidates
     }
-
 def llm_judge(question: str, system_answer: str, citations: List[str], 
              ground_truth: str, expected_citations: List[str], judge_llm) -> Dict:
     """Evaluate system answer using LLM judge"""
@@ -986,5 +1012,6 @@ if st.sidebar.toggle("🔍 Debug Info", value=False):
         "Query History Count": len(st.session_state.query_history),
         "Evaluation Results": len(st.session_state.evaluation_results)
     })
+
 
 
