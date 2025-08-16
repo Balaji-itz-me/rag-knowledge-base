@@ -1,13 +1,2 @@
-# Frontend
 streamlit==1.37.0
 requests==2.31.0
-
-# Backend (if you run locally)
-fastapi==0.110.0
-uvicorn==0.29.0
-langchain==0.1.16
-langchain-community==0.0.34
-faiss-cpu==1.7.4
-tiktoken==0.6.0
-pydantic==2.6.4
-python-dotenv==1.0.1
