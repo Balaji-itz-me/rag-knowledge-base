@@ -9,7 +9,7 @@ API_KEY = "demo-api-key-123"                      # replace with the right key
 
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": API_KEY
+     "Authorization": f"Bearer {API_KEY}"
 }
 
 # --------------------
@@ -59,4 +59,5 @@ if user_input:
 for msg in st.session_state["messages"]:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
+
 
