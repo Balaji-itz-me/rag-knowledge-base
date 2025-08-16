@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # 🔑 API details
-API_URL = "https://269d4b2a64b7.ngrok-free.app"
+API_URL = "https://22fe0b5754d9.ngrok-free.app"
 API_KEY = "demo-api-key-123"  # or whichever key matches your permission
 
 # 🎯 Helper: Send query to backend
@@ -42,4 +42,5 @@ if st.button("Send"):
         st.write("**Citations:**")
         for c in answer["citations"]:
             st.markdown(f"- [{c['title']}]({c['url']})")
+
 
