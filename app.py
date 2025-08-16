@@ -245,7 +245,7 @@ with st.form(key="chat_form", clear_on_submit=True):
         submit_button = st.form_submit_button("📤 Send", use_container_width=True)
         
         # Voice input placeholder (for future enhancement)
-        st.button("🎤 Voice", use_container_width=True, disabled=True, help="Voice input coming soon!")
+        #st.button("🎤 Voice", use_container_width=True, disabled=True, help="Voice input coming soon!")
 
 # Process user input
 if submit_button and user_input.strip():
@@ -334,3 +334,4 @@ if len(st.session_state.messages) == 0:
             if st.button(f"💬 {question}", key=f"sample_{i}"):
                 st.session_state.user_input = question
                 st.experimental_rerun()
+
