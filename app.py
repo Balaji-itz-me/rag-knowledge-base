@@ -104,7 +104,7 @@ def call_rag_api(message, use_dynamic=True, top_k=3):
     try:
         response = requests.post(
             "https://ecc9e5b8fbd7.ngrok-free.app/api/v1/chat",
-            headers={"Authorization: Bearer demo-api-key-123"},
+            headers={"Authorization": "Bearer demo-api-key-123"},
             json={
                 "messages": [{"role": "user", "content": message}],
                 "session_id": st.session_state.session_id,
@@ -334,6 +334,7 @@ if len(st.session_state.messages) == 0:
             if st.button(f"💬 {question}", key=f"sample_{i}"):
                 st.session_state.user_input = question
                 st.experimental_rerun()
+
 
 
 
