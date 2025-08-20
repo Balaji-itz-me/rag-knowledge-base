@@ -1,7 +1,8 @@
 #!/bin/bash
+set -e  # Stop on errors
 
-# EC2 Deployment Script for RAG System
-# Run this on your EC2 instance after SSH
+# Move to project folder
+cd ~/rag-knowledge-base || { echo "❌ Project folder not found!"; exit 1; }
 
 echo "🚀 Starting RAG System Deployment on AWS EC2..."
 
@@ -13,10 +14,9 @@ sudo apt update && sudo apt upgrade -y
 echo "🐍 Installing Python and tools..."
 sudo apt install python3-pip python3-venv git htop curl -y
 
-# Clone your repository (replace with your actual repo)
-echo "📥 Cloning repository..."
+# Clone or update repo
+echo "📥 Ensuring repository is up-to-date..."
 if [ -d "rag_demo" ]; then
-    echo "Repository already exists, pulling latest changes..."
     cd rag_demo
     git pull
     cd ..
@@ -32,19 +32,26 @@ python3 -m venv rag_env
 source rag_env/bin/activate
 
 # Install requirements
-echo "📚 Installing Python dependencies..."
-pip install --upgrade pip
-pip install -r requirements.txt
+if [ -f requirements.txt ]; then
+    echo "📚 Installing Python dependencies..."
+    pip install --upgrade pip
+    pip install -r requirements.txt
+else
+    echo "❌ requirements.txt not found! Please check the project folder."
+    exit 1
+fi
 
-# Create directories
-echo "📁 Creating application directories..."
-mkdir -p /home/ubuntu/rag_demo/{faiss_index,dynamic_index,conversations,evaluation,data}
+# Create application directories if missing
+mkdir -p ~/rag-knowledge-base/{faiss_index,dynamic_index,conversations,evaluation,data,logs}
 
-# Set up environment variables in .env
-echo "🔑 Setting up environment variables..."
-echo "Please enter your Google API key:"
-read -s GOOGLE_API_KEY
-echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" | sudo tee /home/ubuntu/rag_demo/.env > /dev/null
+# Load environment variables from .env if exists
+if [ -f .env ]; then
+    echo "🔑 Loading environment variables from .env"
+    export $(grep -v '^#' .env | xargs)
+else
+    echo "⚠️  .env file not found! Please create it with GOOGLE_API_KEY before running deploy.sh"
+    exit 1
+fi
 
 # Create systemd service for auto-restart
 echo "⚙️ Creating systemd service..."
@@ -56,9 +63,9 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/rag_demo
-EnvironmentFile=/home/ubuntu/rag_demo/.env
-ExecStart=/home/ubuntu/rag_demo/rag_env/bin/python main.py
+WorkingDirectory=/home/ubuntu/rag-knowledge-base/rag_demo
+Environment=GOOGLE_API_KEY=$GOOGLE_API_KEY
+ExecStart=/home/ubuntu/rag-knowledge-base/rag_demo/rag_env/bin/python main.py
 Restart=always
 RestartSec=10
 
@@ -66,37 +73,29 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-# Enable and start service
 sudo systemctl daemon-reload
 sudo systemctl enable rag-api.service
-sudo systemctl restart rag-api.service
 
-# Create start script for manual runs
+# Optional: start manually with nohup
 echo "📝 Creating start script..."
 cat > start_rag.sh << 'EOF'
 #!/bin/bash
-cd /home/ubuntu/rag_demo
+cd ~/rag-knowledge-base/rag_demo
 source rag_env/bin/activate
-export $(cat .env | xargs)
+export $(grep -v '^#' .env | xargs)
 echo "🚀 Starting RAG API server..."
-echo "📡 Access at: http://$(curl -s http://checkip.amazonaws.com):8000"
-echo "📚 API Docs: http://$(curl -s http://checkip.amazonaws.com):8000/docs"
-python main.py
+nohup python main.py > logs/app.log 2>&1 &
+echo "✅ Server started in background. Logs: logs/app.log"
 EOF
 
 chmod +x start_rag.sh
 
-# Get public IP
+# Print public IP info
 PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
-
 echo ""
 echo "✅ DEPLOYMENT COMPLETE!"
-echo "===========================================" 
-echo "🌐 Your RAG API is live at:"
-echo "   http://$PUBLIC_IP:8000"
-echo ""
-echo "📚 API Documentation:"
-echo "   http://$PUBLIC_IP:8000/docs"
+echo "🌐 Your RAG API is ready at: http://$PUBLIC_IP:8000"
+echo "📚 API Docs: http://$PUBLIC_IP:8000/docs"
 echo ""
 echo "🎯 To start manually:"
 echo "   ./start_rag.sh"
