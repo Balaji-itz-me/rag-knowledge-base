@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Context Retention Test",
+    "conversation": [
+      {
+        "role": "user",
+        "content": "What is a transformer in machine learning?"
+      },
+      {
+        "role": "user",
+        "content": "How does its attention mechanism work?"
+      },
+      {
+        "role": "user",
+        "content": "What are the advantages of this approach?"
+      }
+    ],
+    "expected_behavior": "Should understand that 'its' refers to transformer and 'this approach' refers to attention mechanism"
+  },
+  {
+    "name": "Multi-Source Retrieval Test",
+    "conversation": [
+      {
+        "role": "user",
+        "content": "Tell me about recent developments in AI and their impact on software engineering"
+      }
+    ],
+    "expected_behavior": "Should pull from both static and dynamic sources, provide citations"
+  },
+  {
+    "name": "Topic Switching Test",
+    "conversation": [
+      {
+        "role": "user",
+        "content": "Explain neural networks"
+      },
+      {
+        "role": "user",
+        "content": "Actually, let's talk about database indexing instead"
+      }
+    ],
+    "expected_behavior": "Should cleanly switch topics without carrying over irrelevant context"
+  },
+  {
+    "name": "Citation Accuracy Test",
+    "conversation": [
+      {
+        "role": "user",
+        "content": "What does research say about hallucinations in language models?"
+      }
+    ],
+    "expected_behavior": "Should provide specific citations for research claims"
+  }
+]

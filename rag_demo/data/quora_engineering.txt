@@ -1,0 +1,257 @@
+Building Embedding Search at Quora
+ - Engineering at Quora - Quora
+Something went wrong. Wait a moment and try again.
+Try again
+Skip to content
+Skip to search
+Sign In
+Engineering at Quora
+Follow
+·
+13.2K
+13.2K
+Wenhao Su
+Software Engineer at
+Quora (company)
+(2021–present)
+·
+Updated 8mo
+·
+Building Embedding Search at Quora
+Written by
+Wenhao Su
+,
+Lida Li
+and
+Michael Ran Chen
+from Quora’s ML Platform team
+Introduction
+At Quora, we're constantly striving to enhance user experience by delivering relevant content efficiently. A key component in achieving this goal is our embedding search system, which powers content discovery, personalized recommendations, and knowledge retrieval across our products, including Quora and Poe.
+In this post, we'll take you through our journey of revamping our embedding search system architecture. We'll discuss why we needed a change, our decision to adopt Qdrant as our vector database, the challenges we faced during implementation, and the significant improvements we've seen as a result.
+Background
+We use embedding search widely in our machine learning systems. Here are a couple of major use cases:
+1. Candidate Retrieval
+As shown in Figure 1 below, modern recommender systems for web-scale applications typically involve several stages: candidate retrieval, first-stage ranking, second-stage ranking, and final reranking. Embedding search is a major component of Quora’s candidate retrieval system. This step retrieves thousands of candidate content to be ranked in later parts of the system. We employ multiple machine learning models to generate the embedding representation of Quora’s content, though we won’t go into details about the models in this blog post.
+Fig 1. Modern recommender system workflow
+2. Knowledge Retrieval for RAG System
+The Poe platform allows users to upload their own knowledge base to their user-created bots, which can bring new knowledge to the large language model (LLM) in a process known as Retrieval-Augmented Generation (RAG). The uploaded documents are chunked and converted into their embedding representation. When the user sends a message to the bot, the relevant chunks are retrieved using embedding search and added to the LLM context, enabling the bot to leverage the additional knowledge base provided by the user.
+Previous State
+In the past, we have developed two in-house embedding search systems, each with its own strengths as well as limitations:
+The first system, built on top of the
+C++ Eigen linear algebra library
+, organizes embeddings in matrices, and performs matrix multiplication to exhaustively search within its space. This solution is well-suited for small-scale use cases and offers the advantage of supporting incremental updates and some filtering capabilities. However, because matrix multiplication is very slow, it struggles to handle larger collections of embeddings efficiently.
+The second system, which uses Approximate Nearest Neighbor search based on the HNSW algorithm, is designed to handle large collections. Unfortunately, it lacks support for incremental updates due to technical limitations (requirement of a global read/write lock during index updates). As a result, the collections need to be rebuilt offline on a regular basis, which can be inefficient, and the delay can be detrimental for realtime applications.
+Over the years of operating these systems, we have encountered significant challenges and limitations that hinder the advancement of Quora’s recommender systems. The lack of essential features and the complexity of maintaining two separate systems have led us to the realization that it is time to overhaul our embedding search architecture.
+Based on our experience at operating the existing embedding search systems, we laid out the requirements for the new system:
+Low Latency:
+Embedding search must exhibit low latency. Some searches happen in user-facing parts of the product, which require latency in the low tens of milliseconds to retrieve thousands of embeddings.
+Large Scale:
+The system needs to support searching across hundreds of millions of embeddings. Given that this surpasses the memory capacity of a single machine, we need a system that is horizontally scalable.
+Support for Bulk Load:
+In some cases, daily model updates necessitate refreshing the entire set of embeddings. Therefore, we wanted a system that supports an efficient bulk importing mechanism, for the offline index building use case.
+Easy Operations:
+As a small team, we require a system with minimal operational overhead. Thus, it must be highly reliable and easy to manage.
+Evaluating New Solutions
+In the past, we have utilized various open-source libraries (Fassis, HNSWLib, NGT, etc.) that can build embedding indexes and perform embedding search. However, these libraries are usually not designed for high-throughput, real-time embedding search use cases. It would require significant engineering effort to build a full-fledged system that supports realtime search, sharding and filtering around these libraries, which we wanted to avoid if possible.
+Fortunately, many new options for a realtime embedding search system have emerged in recent years, including dedicated vector databases (Milvus, Qdrant, LanceDB, etc.), support for embedding search in existing data storage systems (Postgres, MySQL, Elasticsearch, etc.), and SaaS services (Pinecone, etc.). It is the right time to leverage these solutions. After careful evaluation and testing, we chose Qdrant to be the core of our new embedding search system.
+Why Qdrant?
+Architecture
+Qdrant stands out due to its alignment with our key requirements. It is designed for high-performance and low-latency vector similarity search. It uses the HNSW approximate nearest neighbor algorithm, which we were familiar with due to our existing use cases. It has built-in support for distributed mode which allows Qdrant to scale horizontally, capable of handling hundreds of millions of embeddings spread across multiple machines.
+One of the most appealing aspects of Qdrant is the ease of operation. This is especially important for a small team like ours. The self-contained architecture means we can get it up and running without having to worry about complex external dependencies. Also, Qdrant provides great visibility into how the system is performing, with detailed metrics and monitoring features built-in.
+Qdrant provides compatibility for supporting our existing bulk load mechanism. Its snapshot functionality makes it possible to regularly update the entire embedding set with minimal disruption to the running service. In addition, it has the ability to combine vector search with metadata filtering, which gives us powerful and flexible querying capabilities.
+Overall, Qdrant checks all the boxes - high performance, high scalability, rich functionality, and ease of use.
+Performance Evaluation
+We benchmarked Qdrant against our in-house embedding search system, which also uses Approximate Nearest Neighbor search, to compare their search speed.
+The table below shows the results of a test where we retrieved the top 2000 vectors from a collection holding ~1.16 million embedding vectors, where each vector has a dimension of 513.
+We observed that Qdrant is about 5-6 ms faster in search time under similar load. Qdrant showed less variable performance, with smaller standard deviations compared to our in-house solution. During our tests, we also noted that Qdrant performs significantly better when searching on higher dimension vectors (e.g. 1024-dim). This will unblock future use cases that require larger embedding sizes.
+These benchmark results gave us confidence that Qdrant can be a good choice for replacing our existing in-house embedding search system.
+Design and Implementation
+There are two important request paths that we needed to support: Embedding Search and Embedding Updates. In the diagram below, the red boxes indicate the embedding update path, and the blue box indicate the embedding search path.
+Fig 2. Embedding Search architecture overview
+Embedding Search
+There are multiple clients written in different programming languages that need to make requests to Qdrant. Although we can directly call the Qdrant API in these different clients, it requires duplicating some application logic across multiple languages including Python, Golang and C++. We determined that it would be valuable to have a proxy service in front of the Qdrant database to handle search traffic coming from different services. Some key advantages of this approach include:
+Unified Interface:
+This allows us to avoid writing a thick Qdrant client for multiple languages, which can lead to duplicate code, and the need to synchronize changes across multiple services.
+Operational Benefits:
+The proxy service can offer centralized monitoring and traffic throttling capabilities. Additionally, it can act as a routing layer to accommodate the growing number of collections which are spread across multiple Qdrant clusters.
+Migration Support:
+As we migrate existing use cases to Qdrant, there will be a transitional state where some collections have migrated to Qdrant while others remain in our in-house system. The proxy service can contain the logic to split and redirect search requests based on migration status, simplifying the migration process.
+In Figure 2, the embedding search workflow is highlighted inside the blue box. The Qdrant-proxy service will serve as the intermediary service in this workflow. It will receive search requests from clients, forward them to the Qdrant service, process the responses, and return the results back to the clients.
+Embedding Update
+There are two types of embedding updates we needed to support. The first type is realtime ingestion, which is highlighted in the top red box in Figure 2. The second type is snapshot restoration, which is highlighted in the bottom red box.
+Realtime Ingestion
+We want the user’s activities on Quora, such as upvoting an answer or following a question, to have a realtime effect on the candidates being generated for this user in their recommendations. To accomplish this, we log updates from all relevant user activities to a Kafka topic. We have built an ingestion service to read from those Kafka topics and write updates to the Qdrant database.
+Snapshot Restoration
+Some of our embedding generation models are re-trained regularly in offline machine learning pipelines. For some collections, the entire set of embeddings needs to be updated when this happens. We maintain a version number for these collections; each time the offline training job generates new embeddings, we replace the existing ones and increment the version number.
+We did not want to enqueue updated embeddings to the same Kafka ingestion system as the realtime updates, as this could result in long processing times, and frequent re-indexing operations affecting the performance of the cluster. We utilize the snapshot restoration feature of Qdrant to bulk-load the entire set of embeddings directly.
+Fig 3. Snapshot restore pipeline
+Figure 3 shows the high-level steps to update the entire set of embeddings in a collection. These steps are orchestrated by Airflow tasks. The steps are:
+Start a new local empty Qdrant server instance.
+Create the corresponding collection with new version number in this local Qdrant instance.
+Ingests all the new embeddings into this local collection.
+Uses Qdrant API to create a snapshot file of this local collection.
+Uploads the snapshot file to an AWS S3 storage bucket.
+A snapshot-restorer service will dynamically monitor the S3 bucket for any new snapshot files. Whenever a new snapshot is detected, the snapshot-restorer will automatically load the corresponding collection with the new version number to the Qdrant database in production.
+Collection Management
+Similar to database management, we allow machine learning engineers to define configurations for their collections directly in the code. These configurations include collection-level properties such as the number of shards, number of replicas, HNSW indexing parameters, and payload indexing settings. Whenever there is a change to the configuration, a deployment pipeline will automatically update the affected Qdrant collection to reflect those changes.
+Learnings
+During the migration to Qdrant, we encountered many challenges and gained useful learnings.
+Collection sharding strategies
+Qdrant supports both standalone mode, where each collection is contained on only one node, and distributed mode, where each collection is sharded across multiple Qdrant nodes with replication between them. This distributed architecture provides benefits such as horizontal scaling, the ability to serve large collections, and high reliability. These benefits motivated us to create our first Qdrant cluster in distributed mode, as illustrated in Figure 4.
+Fig 4. Qdrant cluster running in distributed mode with 3 nodes, where each shard has 2 replicas
+However, this mode also presents some challenges. One downside is operational complexity. During vertical or horizontal scaling, shard transfers occur in the background to rebalance collection shards among Qdrant nodes. This process typically consumes significant CPU and memory resources, which can impact search latency and cause errors.
+As shard transfer tends to be more expensive on huge collections, we later decide to use the standalone mode for hosting all large collections that involves heavy embedding update traffic. As shown in Figure 5, this means every collection only has 1 shard. In this mode, each Qdrant node is a replica of one another and holds a copy of every collection in this cluster.
+Fig 5. Qdrant cluster with standalone mode
+This approach eliminates shard transfers between nodes, significantly reducing the resource risks associated with operations like adding new collections or scaling the cluster. However, it also limits us to vertical scaling the cluster for accommodating more collections.
+Overall, after experiencing the challenges of heavy shard transfer operations, we opted to place all collections with significant embedding update needs into standalone mode Qdrant clusters, while using distributed mode for most other collections due to being able to benefit from horizontal scaling.
+Quantization
+Quantization is a way to reduce the memory required for storing many embeddings by compressing the vector data type, or reducing its dimension. An example of quantization supported by Qdrant is to convert all
+float32
+numbers in an embedding to
+int8
+, which reduces the memory used by 75% and makes embedding search faster. Qdrant provides multiple different quantization methods, each with trade-offs in accuracy, speed, and compression ratio.
+While quantization is easy to use and can significantly reduce memory footprint, it led to a reduction in accuracy of the results (recall) which required also enabling oversampling and reranking. However, we found that the combination of these features placed a heavy demand on disk I/O because they needed to read the original, non-quantized vectors from the disk. Hence upon process restart, the OS disk cache requires a long time to warm up, before the service is able to serve search traffic without an elevated error rate.
+In summary, our finding is that if Qdrant is using cloud disks like Amazon EBS and serving high traffic, it may not be a good idea to use quantization together with oversampling and reranking.
+Online & offline sub-collections
+In the
+Embedding Update
+section, we have introduced our approaches for online ingestion and offline bulk updates. In practice, some of our collections require both online ingestion to update the embedding vectors in realtime, and the offline snapshot restoration to refresh the entire collection periodically.
+Fig 6. Update loss for collections with both realtime ingestion and snapshot restoration
+For those collections, an additional issue arises as illustrated in Figure 6. Typically, the offline snapshot restoration process takes approximately 30 minutes. During this interval, all real-time embedding updates continue to be recorded in the previous version of the collection. Consequently, when the collection with the new version number is created, it will not include any embedding updates made during the snapshot restoration period.
+Fig 7. Design of online & offline sub-collections
+To mitigate the potential for data loss, we introduce the concept of online and offline sub-collections for these use cases. As illustrated in Figure 7, for the
+sample_collection
+, we maintain both online and offline collections for version 12, with both receiving real-time ingestion. When the snapshot restoration process begins to create version 13, we immediately establish a new version 13 online collection to start receiving real-time updates. This ensures that by the time the version 13 offline collection is ready, the online collection will have captured all real-time embedding updates from the 30-minute gap.
+To handle embedding search requests, the Qdrant-proxy service sends search queries to both the version 13 online and offline collections, merges the results, and returns them to the client.
+This online and offline sub-collection design ensures that no real-time embedding updates are lost during the offline snapshot restoration period, albeit at the cost of sending search requests to both sub-collections and the added complexity of merging results on the Qdrant-proxy side.
+Conclusion
+The work to revamp our embedding search capabilities with Qdrant has significantly improved our ability to deliver personalized and relevant content to our users efficiently and has set a strong foundation for future enhancements. Several product enhancements have been launched that were not possible with our old embedding search system. We also received positive feedback from our ML teams that the new system is much more flexible and easier to use.
+As with any new technology adoption, we faced early adopter challenges. The migration to Qdrant involved overcoming various issues, from handling distributed systems complexity to tuning performance for our specific use cases. These hurdles required our team to engage deeply with Qdrant's features, often pushing the boundaries of its capabilities. We are excited to see the improvements from every new release of Qdrant, which often addresses pain points we have encountered.
+Looking ahead, we are excited about the potential enhancements and innovations that can be built upon this modernized foundation. The support from the Qdrant community, combined with ongoing development and updates, ensure that we can continue to adapt and evolve our systems to meet future challenges.
+Acknowledge
+Special thanks to
+Lida Li
+and
+Michael Ran Chen
+for their leadership and support. Appreciation also goes to our Machine Learning team members,
+Victor Chen
+,
+Brendan Graham
+, and
+Dzmitry Dalenka
+, for their crucial contributions during the early adoption phase. Their efforts significantly shaped the project’s success.
+Finally, we are grateful to the Qdrant team and the broader community for their responsive support, insightful suggestions, and technical assistance, which have been invaluable.
+13.6K views
+·
+View upvotes
+·
+View 4 shares
+·
+Upvote
+·
+99
+49
+9
+5
+9
+4
+Comments
+Recommended
+Eric Drummond
+·
+10mo
+To help the layman or even non-AI-expert:
+Apache Kafka - Wikipedia
+Apache Kafka is a distributed event store and stream-processing platform. It is an open-source system developed by the Apache Software Foundation written in Java and Scala . The project aims to provide a unified, high-throughput, low-latency platform for handling real-time data feeds. Kafka can connect to external systems (for data import/export) via Kafka Connect, and provides the Kafka Streams libraries for stream processing applications. Kafka uses a binary TCP -based protocol that is optimized for efficiency and relies on a "message set" abstraction that naturally groups messages together to reduce the overhead of the network roundtrip. This "leads to larger network packets, larger sequential disk operations, contiguous memory blocks [...] which allows Kafka to turn a bursty stream of random message writes into linear writes." [ 4 ] Kafka was originally developed at LinkedIn , and was subsequently open sourced in early 2011. Jay Kreps, Neha Narkhede and Jun Rao helped co-create Kafka. [ 5 ] Graduation from the Apache Incubator occurred on 23 October 2012. [ 6 ] Jay Kreps chose to name the software after the author Franz Kafka because it is "a system optimized for writing", and he liked Kafka's work. [ 7 ] Apache Kafka is a distributed log-based messaging system that guarantees ordering within individual partitions rather than across the entire topic. Unlike queue-based systems, Kafka retains messages in a durable, append-only log, allowing multiple consumers to read at different offsets. Kafka uses manual offset management, giving consumers control over retries and failure handling. If a consumer fails to process a message, it can delay committing the offset, preventing further progress in that partition while other partitions remain unaffected. This partition-based design enables fault isolation and parallel processing while allowing ordering to be maintained within partitions, depending on consumer handling. [ 8 ] [ page needed ] In 2025, Apache Kafka introduced "Queues for Kafka", [ 9 ] adding share groups as an alternative to consumer groups. This feature enables queue-like semantics where consumers can cooperatively process records from the same partitions, with individual message acknowledgment and delivery tracking. Unlike traditional consumer groups where partitions are exclusively assigned, share groups allow the number of consumers to exceed partition count, making it ideal for work-queue patterns while maintaining Kafka's durability and scalability benefits. This development addresses the common challenge of "over-partitioning" that many Kafka users face. [ citation needed ] Kafka Connect (or Connect API) is a framework to import/export data from/to other systems. [ 10 ] It was added in the Kafka 0.9.0.0 release and uses the Producer and Consumer API internally. The Connect framework itself executes so-called "connectors" that implement the actual logic to read/write data from other systems. The Connect API defines the programming
+https://en.m.wikipedia.org/wiki/Apache_Kafka
+Reply
+Upvote
+·
+9
+2
+Eric Drummond
+·
+10mo
+Am I right in thinking this is not really about the search engine users use explicitly, but rather all the ‘behind the scenes’ searchy things that quora does for you? I wrote this long ago: things may have changed: There are 16 kinds of search-y things in Quora (web UI). 1. As you type a question in the A…
+(more)
+Reply
+Upvote
+·
+9
+2
+Comet
+·
+10mo
+To improve search please fix TopicBot, giving good ontology
+[1]
+like a
+modern-day Library of Alexandria
+[2]
+and
+deleting empty Topics
+.
+[3]
+As users Follow Topics, this improves their feed.
+Footnotes
+[1]
+Comet's answer to Why is "University of Austin" not a topic?
+[2]
+Our Mission
+[3]
+Auto Deletion of Bad Topics
+Reply
+Upvote
+·
+9
+1
+Phillip Remaker
+·
+10mo
+This is amazing. Does every element (Question, answer, post) assigned a 513-dim vector? And may someday have a 1024-dim vector?
+Reply
+Upvote
+Eric Drummond
+·
+10mo
+Thank you for trying to communicate to users. Things seem to have become 1,000 times more complicated in the last year. Fighting fire with fire, I asked Microsoft co-pilot to summarize this! * Purpose: Quora developed an embedding-based search system to improve the relevance and accuracy of search result…
+(more)
+Reply
+Upvote
+About the Author
+Wenhao Su
+Software Engineer at
+Quora (company)
+2021–present
+M.S. in
+Computer Science
+,
+University of Illinois at Urbana-Champaign
+Graduated 2020
+Lives in
+Santa Clara, CA
+2022–present
+13.7K content views
+1K this month
+Active in 2 Spaces
+Knows
+Mandarin Chinese
+View more in
+Engineering at Quora
+About
+·
+Careers
+·
+Privacy
+·
+Terms
+·
+Contact
+·
+Languages
+·
+Your Ad Choices
+·
+Press
+·
+© Quora, Inc. 2025
+Please enable Javascript and refresh the page to continue

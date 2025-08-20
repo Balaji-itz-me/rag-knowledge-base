@@ -1,0 +1,27 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "could you give the summary of top 20 agentic AI project?",
+      "timestamp": "2025-08-15T15:57:35.537000+00:00"
+    },
+    {
+      "role": "assistant",
+      "content": "I'm sorry, but the provided text only mentions one agentic AI project:  UiPath IXP, which is described as improving standard LLM performance by combining flexible AI with enterprise-grade validation, schema control, and integration.  It's designed to help agents extract value from documents accurately and deterministically, eliminating the need for complex prompt engineering and upfront training.  The text doesn't offer a list of the top 20 agentic AI projects.",
+      "timestamp": "2025-08-15T15:59:05.017479"
+    },
+    {
+      "role": "user",
+      "content": "any idea how it eliminating the need for complex prompt engineering and upfront training ?",
+      "timestamp": "2025-08-15T15:57:35.537000+00:00"
+    },
+    {
+      "role": "assistant",
+      "content": "UiPath IXP eliminates the need for complex prompt engineering and upfront training through its inference-first training process.  Instead of requiring extensive pre-training with manually annotated documents, IXP allows agents to simply provide instructions (similar to a prompt) on what to extract and how it appears in the document.  The system then uses its built-in capabilities and post/pre-processing to ensure consistent data output, even with complex unstructured documents.  The ability to define \"field groups\" specifying the exact information needed further streamlines the process, providing the structured output directly without the need for extensive prompt engineering or prior training.",
+      "timestamp": "2025-08-15T16:06:51.863799"
+    }
+  ],
+  "created_at": "2025-08-15 15:58:47.988781",
+  "last_active": "2025-08-15 16:06:51.863840",
+  "metadata": {}
+}
