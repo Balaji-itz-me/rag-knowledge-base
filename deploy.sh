@@ -15,17 +15,16 @@ sudo apt install python3-pip python3-venv git htop curl -y
 
 # Clone your repository (replace with your actual repo)
 echo "📥 Cloning repository..."
-if [ -d "your-rag-project" ]; then
+if [ -d "rag_demo" ]; then
     echo "Repository already exists, pulling latest changes..."
-    cd your-rag-project
+    cd rag_demo
     git pull
     cd ..
 else
-    # REPLACE THIS WITH YOUR ACTUAL GITHUB REPO URL
-    git clone https://github.com/yourusername/your-rag-project.git
+    git clone https://github.com/<your-username>/<your-repo>.git rag_demo
 fi
 
-cd your-rag-project
+cd rag_demo
 
 # Create virtual environment
 echo "🔧 Setting up Python environment..."
