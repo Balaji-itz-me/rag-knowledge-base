@@ -1,33 +1,33 @@
 # Core FastAPI and web framework
-fastapi>=0.104.1,<0.105.0
-uvicorn>=0.24.0,<0.25.0
-pydantic>=2.5.2,<3.0.0
-python-multipart>=0.0.6
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+python-multipart
 
-# LangChain and RAG components
-langchain>=0.1.20,<0.2.0
-langchain-community>=0.0.38,<0.1.0
-langchain-google-genai>=1.0.10,<2.0.0
+# LangChain and RAG components - Let pip resolve versions
+langchain
+langchain-community
+langchain-google-genai
 
 # Machine Learning and Embeddings
-sentence-transformers>=2.2.2,<3.0.0
-transformers>=4.36.2,<5.0.0
-torch>=2.2.0,<3.0.0
-faiss-cpu>=1.7.4,<2.0.0
-scikit-learn>=1.3.2,<2.0.0
+sentence-transformers>=2.2.0
+transformers>=4.36.0
+torch>=2.2.0
+faiss-cpu>=1.7.4
+scikit-learn>=1.3.0
 
 # Search and ranking
-rank-bm25>=0.2.2
+rank-bm25
 
 # Data processing
-pandas>=2.1.4,<3.0.0
-numpy>=1.24.4,<2.0.0
-beautifulsoup4>=4.12.2,<5.0.0
-requests>=2.31.0,<3.0.0
+pandas>=2.1.0
+numpy>=1.24.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
 
 # Utilities
-python-dateutil>=2.8.2
-typing-extensions>=4.8.0
+python-dateutil
+typing-extensions
 
 # Optional: For better performance
-httpx>=0.25.2,<1.0.0
+httpx
