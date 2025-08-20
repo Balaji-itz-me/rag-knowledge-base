@@ -21,7 +21,7 @@ if [ -d "rag_demo" ]; then
     git pull
     cd ..
 else
-    git clone https://github.com/<your-username>/<your-repo>.git rag_demo
+    git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git rag_demo
 fi
 
 cd rag_demo
