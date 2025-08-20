@@ -40,14 +40,11 @@ pip install -r requirements.txt
 echo "📁 Creating application directories..."
 mkdir -p /home/ubuntu/rag_demo/{faiss_index,dynamic_index,conversations,evaluation,data}
 
-# Set up environment variables
+# Set up environment variables in .env
 echo "🔑 Setting up environment variables..."
 echo "Please enter your Google API key:"
 read -s GOOGLE_API_KEY
-export GOOGLE_API_KEY="$GOOGLE_API_KEY"
-
-# Add to bashrc for persistence
-echo "export GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"" >> ~/.bashrc
+echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" | sudo tee /home/ubuntu/rag_demo/.env > /dev/null
 
 # Create systemd service for auto-restart
 echo "⚙️ Creating systemd service..."
@@ -59,9 +56,9 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/your-rag-project
-Environment=GOOGLE_API_KEY=$GOOGLE_API_KEY
-ExecStart=/home/ubuntu/your-rag-project/rag_env/bin/python main.py
+WorkingDirectory=/home/ubuntu/rag_demo
+EnvironmentFile=/home/ubuntu/rag_demo/.env
+ExecStart=/home/ubuntu/rag_demo/rag_env/bin/python main.py
 Restart=always
 RestartSec=10
 
@@ -72,6 +69,7 @@ EOF
 # Enable and start service
 sudo systemctl daemon-reload
 sudo systemctl enable rag-api.service
+sudo systemctl restart rag-api.service
 
 # Create start script for manual runs
 echo "📝 Creating start script..."
@@ -79,7 +77,7 @@ cat > start_rag.sh << 'EOF'
 #!/bin/bash
 cd /home/ubuntu/rag_demo
 source rag_env/bin/activate
-export GOOGLE_API_KEY="$GOOGLE_API_KEY"
+export $(cat .env | xargs)
 echo "🚀 Starting RAG API server..."
 echo "📡 Access at: http://$(curl -s http://checkip.amazonaws.com):8000"
 echo "📚 API Docs: http://$(curl -s http://checkip.amazonaws.com):8000/docs"
@@ -94,7 +92,7 @@ PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
 echo ""
 echo "✅ DEPLOYMENT COMPLETE!"
 echo "===========================================" 
-echo "🌐 Your RAG API is ready at:"
+echo "🌐 Your RAG API is live at:"
 echo "   http://$PUBLIC_IP:8000"
 echo ""
 echo "📚 API Documentation:"
@@ -103,8 +101,10 @@ echo ""
 echo "🎯 To start manually:"
 echo "   ./start_rag.sh"
 echo ""
-echo "🔄 To start as service:"
+echo "🔄 To manage as service:"
 echo "   sudo systemctl start rag-api.service"
+echo "   sudo systemctl stop rag-api.service"
+echo "   sudo systemctl restart rag-api.service"
 echo ""
 echo "📊 To check status:"
 echo "   sudo systemctl status rag-api.service"
