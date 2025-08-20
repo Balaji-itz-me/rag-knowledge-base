@@ -47,19 +47,19 @@ print("✅ All imports successful!")
 # Configuration for AWS deployment
 class Config:
     # Base path for AWS EC2
-    BASE_PATH = "/home/ubuntu/rag_demo"
+    BASE_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo"
     
     # Static index (existing)
-    STATIC_FAISS_PATH = "/home/ubuntu/rag_demo/faiss_index"
+    STATIC_FAISS_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/faiss_index"
 
     # Dynamic index (new)
-    DYNAMIC_BASE_PATH = "/home/ubuntu/rag_demo/dynamic_index"
-    DYNAMIC_FAISS_PATH = "/home/ubuntu/rag_demo/dynamic_index/faiss_index"
-    METADATA_PATH = "/home/ubuntu/rag_demo/dynamic_index/metadata"
-    BACKUP_PATH = "/home/ubuntu/rag_demo/dynamic_index/backups"
+    DYNAMIC_BASE_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/dynamic_index"
+    DYNAMIC_FAISS_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/dynamic_index/faiss_index"
+    METADATA_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/dynamic_index/metadata"
+    BACKUP_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/dynamic_index/backups"
 
     # Conversation settings
-    CONVERSATIONS_PATH = "/home/ubuntu/rag_demo/conversations"
+    CONVERSATIONS_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/conversations"
     MAX_CONVERSATION_LENGTH = 10  # Maximum number of message pairs
     CONVERSATION_TIMEOUT = 1800   # 30 minutes in seconds
     MAX_CONTEXT_LENGTH = 3        # Last N message pairs to include in context
@@ -81,7 +81,7 @@ class Config:
     MAX_VERSIONS = 3
 
     # Evaluation settings
-    EVALUATION_DATASET_PATH = "/home/ubuntu/rag_demo/evaluation"
+    EVALUATION_DATASET_PATH = "/home/ubuntu/rag-knowledge-base/rag_demo/evaluation"
 
     # Authentication - YOU CAN CHANGE THESE KEYS
     VALID_API_KEYS = {
@@ -202,9 +202,9 @@ active_conversations = {}
 
 # Updated source URL mapping for static content (AWS paths)
 source_url_map = {
-    "/home/ubuntu/rag_demo/data/genai-platform.txt": "https://huyenchip.com/2024/07/25/genai-platform.html",
-    "/home/ubuntu/rag_demo/data/hallucination.txt": "https://lilianweng.github.io/posts/2024-07-07-hallucination/",
-    "/home/ubuntu/rag_demo/data/quora_engineering.txt": "https://quoraengineering.quora.com/Building-Embedding-Search-at-Quora"
+    "/home/ubuntu/rag-knowledge-base/rag_demo/data/genai-platform.txt": "https://huyenchip.com/2024/07/25/genai-platform.html",
+    "/home/ubuntu/rag-knowledge-base/rag_demo/data/hallucination.txt": "https://lilianweng.github.io/posts/2024-07-07-hallucination/",
+    "/home/ubuntu/rag-knowledge-base/rag_demo/data/quora_engineering.txt": "https://quoraengineering.quora.com/Building-Embedding-Search-at-Quora"
 }
 
 # Utility functions
