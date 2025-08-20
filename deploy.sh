@@ -2,7 +2,7 @@
 set -e  # Stop on errors
 
 # Move to project folder
-cd ~/rag-knowledge-base || { echo "❌ Project folder not found!"; exit 1; }
+cd ~/rag-knowledge-base/rag_demo || { echo "❌ Project folder not found!"; exit 1; }
 
 echo "🚀 Starting RAG System Deployment on AWS EC2..."
 
@@ -14,17 +14,9 @@ sudo apt update && sudo apt upgrade -y
 echo "🐍 Installing Python and tools..."
 sudo apt install python3-pip python3-venv git htop curl -y
 
-# Clone or update repo
+# Ensure repository is up-to-date
 echo "📥 Ensuring repository is up-to-date..."
-if [ -d "rag_demo" ]; then
-    cd rag_demo
-    git pull
-    cd ..
-else
-    git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git rag_demo
-fi
-
-cd rag_demo
+git pull || { echo "❌ Failed to update repo"; exit 1; }
 
 # Create virtual environment
 echo "🔧 Setting up Python environment..."
@@ -37,19 +29,19 @@ if [ -f requirements.txt ]; then
     pip install --upgrade pip
     pip install -r requirements.txt
 else
-    echo "❌ requirements.txt not found! Please check the project folder."
+    echo "❌ requirements.txt not found in $(pwd)! Check your folder."
     exit 1
 fi
 
 # Create application directories if missing
-mkdir -p ~/rag-knowledge-base/{faiss_index,dynamic_index,conversations,evaluation,data,logs}
+mkdir -p ~/rag-knowledge-base/rag_demo/{faiss_index,dynamic_index,conversations,evaluation,data,logs}
 
-# Load environment variables from .env if exists
+# Load environment variables from .env
 if [ -f .env ]; then
     echo "🔑 Loading environment variables from .env"
     export $(grep -v '^#' .env | xargs)
 else
-    echo "⚠️  .env file not found! Please create it with GOOGLE_API_KEY before running deploy.sh"
+    echo "❌ .env file not found! Please create it with GOOGLE_API_KEY before running deploy.sh"
     exit 1
 fi
 
