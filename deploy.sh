@@ -77,7 +77,7 @@ sudo systemctl enable rag-api.service
 echo "📝 Creating start script..."
 cat > start_rag.sh << 'EOF'
 #!/bin/bash
-cd /home/ubuntu/your-rag-project
+cd /home/ubuntu/rag_demo
 source rag_env/bin/activate
 export GOOGLE_API_KEY="$GOOGLE_API_KEY"
 echo "🚀 Starting RAG API server..."
