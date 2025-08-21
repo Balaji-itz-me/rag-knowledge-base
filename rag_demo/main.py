@@ -202,9 +202,9 @@ active_conversations = {}
 
 # Updated source URL mapping for static content (AWS paths)
 source_url_map = {
-    "/home/ubuntu/rag-knowledge-base/rag_demo/data/genai-platform.txt": "https://huyenchip.com/2024/07/25/genai-platform.html",
-    "/home/ubuntu/rag-knowledge-base/rag_demo/data/hallucination.txt": "https://lilianweng.github.io/posts/2024-07-07-hallucination/",
-    "/home/ubuntu/rag-knowledge-base/rag_demo/data/quora_engineering.txt": "https://quoraengineering.quora.com/Building-Embedding-Search-at-Quora"
+    "/content/drive/MyDrive/RAG_demo/data/genai-platform.txt": "https://huyenchip.com/2024/07/25/genai-platform.html",
+    "/content/drive/MyDrive/RAG_demo/data/hallucination.txt": "https://lilianweng.github.io/posts/2024-07-07-hallucination/",
+    "/content/drive/MyDrive/RAG_demo/data/quora_engineering.txt": "https://quoraengineering.quora.com/Building-Embedding-Search-at-Quora"
 }
 
 # Utility functions
