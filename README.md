@@ -6,7 +6,7 @@ A production-ready Retrieval Augmented Generation (RAG) system designed to extra
 
 ## 🎥 Demo Video
 
-[![RAG System Demo]](https://www.linkedin.com/posts/balaji-k-626613157_rag-nlp-ai-activity-7364317125097738241-UujA?utm_source=share&utm_medium=member_desktop&rcm=ACoAACWk4L4BHp-HRG-mgVDRSaKjIjIYeY2cNIk)
+[![RAG System Demo](RAG_System_Streamlit.png)](https://www.linkedin.com/posts/balaji-k-626613157_rag-nlp-ai-activity-7364317125097738241-UujA?utm_source=share&utm_medium=member_desktop&rcm=ACoAACWk4L4BHp-HRG-mgVDRSaKjIjIYeY2cNIk)
 
 *Click the image above to watch the full system demonstration*
 
