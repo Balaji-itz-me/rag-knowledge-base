@@ -231,7 +231,7 @@ def authenticate_user():
             st.markdown("**⚡ Advanced Capabilities:**")
             st.markdown("- 📚 Dynamic URL Indexing")
             st.markdown("- 🔍 Source Management")
-            st.markdown("- 📊 System Evaluation")
+            st.markdown("- 📊 Real-time Performance")
         
         return False
     else:
@@ -611,172 +611,6 @@ def index_urls(urls: List[str]):
         status_text.text("❌ Indexing failed!")
         st.error(f"Indexing failed: {error}")
 
-def evaluation_suite():
-    """Evaluation and testing interface"""
-    st.markdown("### 📊 System Evaluation Suite")
-    
-    with st.expander("🧪 Run System Evaluation", expanded=False):
-        st.markdown("#### 🎯 Automated Testing")
-        st.info("This will run comprehensive tests on the RAG system including relevance, citation accuracy, and context retention.")
-        
-        # Test configuration
-        col1, col2 = st.columns(2)
-        with col1:
-            test_types = st.multiselect(
-                "Test Types:",
-                ["Context Retention", "Citation Accuracy", "Topic Switching", "Multi-source"],
-                default=["Context Retention", "Citation Accuracy"]
-            )
-        
-        with col2:
-            num_tests = st.slider("Number of test cases:", 1, 10, 4)
-        
-        if st.button("🚀 Run Evaluation", use_container_width=True):
-            run_evaluation(test_types, num_tests)
-    
-    with st.expander("📈 Performance Metrics", expanded=False):
-        st.markdown("#### 📊 System Performance Analysis")
-        
-        # Mock performance data for demo
-        if st.button("📊 Generate Performance Report"):
-            show_performance_metrics()
-
-def run_evaluation(test_types: List[str], num_tests: int):
-    """Run system evaluation"""
-    # Create test cases based on selected types
-    test_cases = []
-    
-    if "Context Retention" in test_types:
-        test_cases.append({
-            "conversation": [
-                {"role": "user", "content": "What is attention mechanism in transformers?"},
-                {"role": "user", "content": "How does it help with long sequences?"}
-            ],
-            "expected_context": "attention mechanism",
-            "test_type": "context_retention"
-        })
-    
-    if "Citation Accuracy" in test_types:
-        test_cases.append({
-            "conversation": [
-                {"role": "user", "content": "Tell me about RAG systems"}
-            ],
-            "expected_citations": True,
-            "test_type": "citation_accuracy"
-        })
-    
-    # Limit test cases to requested number
-    test_cases = test_cases[:num_tests]
-    
-    eval_data = {"test_cases": test_cases}
-    
-    with st.spinner("🧪 Running evaluation tests..."):
-        progress_bar = st.progress(0)
-        
-        for i in range(100):
-            time.sleep(0.02)  # Simulate processing time
-            progress_bar.progress(i + 1)
-        
-        response_data, error = make_api_request("/api/v1/evaluate", "POST", eval_data)
-    
-    if response_data:
-        st.success("✅ Evaluation completed!")
-        
-        # Overall score
-        overall_score = response_data.get('overall_score', 0)
-        st.metric("🎯 Overall Score", f"{overall_score:.2%}")
-        
-        # Detailed metrics
-        metrics = response_data.get('metrics', {})
-        if metrics:
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                relevance = metrics.get('average_relevance', 0)
-                st.metric("🎯 Relevance", f"{relevance:.2%}")
-            
-            with col2:
-                citation = metrics.get('average_citation', 0)
-                st.metric("📚 Citations", f"{citation:.2%}")
-            
-            with col3:
-                context = metrics.get('average_context', 0)
-                st.metric("🧠 Context", f"{context:.2%}")
-        
-        # Test results
-        results = response_data.get('detailed_results', [])
-        if results:
-            st.markdown("#### 📋 Detailed Results")
-            
-            results_df = []
-            for result in results:
-                results_df.append({
-                    'Test Type': result.get('test_type', 'Unknown'),
-                    'Question': result.get('question', '')[:50] + '...',
-                    'Relevance': f"{result.get('scores', {}).get('relevance', 0):.2%}",
-                    'Citations': f"{result.get('scores', {}).get('citation', 0):.2%}",
-                    'Context': f"{result.get('scores', {}).get('context_retention', 0):.2%}",
-                    'Overall': f"{result.get('overall_score', 0):.2%}"
-                })
-            
-            if results_df:
-                df = pd.DataFrame(results_df)
-                st.dataframe(df, use_container_width=True)
-    
-    else:
-        st.error(f"Evaluation failed: {error}")
-
-def show_performance_metrics():
-    """Show system performance metrics"""
-    # Generate mock data for demonstration
-    st.markdown("#### ⚡ Response Time Analysis")
-    
-    # Mock response times
-    response_times = {
-        'Simple Query': [0.8, 1.2, 0.9, 1.1, 1.0],
-        'Complex Query': [2.1, 2.5, 1.9, 2.3, 2.2],
-        'Follow-up Query': [0.6, 0.9, 0.7, 0.8, 0.75]
-    }
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Response time chart
-        fig = go.Figure()
-        for query_type, times in response_times.items():
-            fig.add_trace(go.Box(
-                y=times,
-                name=query_type,
-                boxpoints='all',
-                jitter=0.5,
-                whiskerwidth=0.2
-            ))
-        
-        fig.update_layout(
-            title="Response Time Distribution",
-            yaxis_title="Time (seconds)",
-            height=400
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        # Accuracy metrics
-        accuracy_data = {
-            'Metric': ['Relevance', 'Citation Accuracy', 'Context Retention', 'Overall'],
-            'Score': [0.85, 0.78, 0.92, 0.85]
-        }
-        
-        fig = px.bar(
-            accuracy_data,
-            x='Metric',
-            y='Score',
-            title="System Accuracy Metrics",
-            color='Score',
-            color_continuous_scale='Viridis'
-        )
-        fig.update_layout(height=400)
-        st.plotly_chart(fig, use_container_width=True)
-
 def main():
     """Main application function"""
     init_session_state()
@@ -796,10 +630,10 @@ def main():
     
     st.sidebar.markdown("---")
     
-    # Navigation menu
+    # Navigation menu (removed evaluation suite)
     page = st.sidebar.selectbox(
         "Select Feature:",
-        ["🏠 Dashboard", "💬 Chat Interface", "📚 Content Management", "📊 Evaluation Suite"]
+        ["🏠 Dashboard", "💬 Chat Interface", "📚 Content Management"]
     )
     
     # Quick stats in sidebar
@@ -826,27 +660,27 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
-            **🎬 Perfect Demo Flow:**
-            1. 📊 Show system health & stats
-            2. 💬 Demonstrate chat with context
-            3. 📚 Add new URL live
-            4. 🔍 Show source management  
-            5. 📈 Run evaluation suite
+            **🎬 Demo Flow:**
+            1. 📊 System health & overview
+            2. 💬 Interactive chat demonstration
+            3. 📚 Live URL indexing
+            4. 🔍 Source management
+            5. 🔄 Real-time system monitoring
             """)
         
         with col2:
             st.markdown("""
-            **💡 Interview Tips:**
-            - Start with system overview
-            - Use demo questions for smooth flow
-            - Explain hybrid search (BM25 + FAISS)
-            - Show conversation context retention
-            - Highlight real-time indexing
+            **💡 Key Features:**
+            - Conversational RAG system
+            - Hybrid search (BM25 + FAISS)
+            - Dynamic content indexing
+            - Context-aware responses
+            - Session management
             """)
         
         # Quick access buttons
         st.markdown("### ⚡ Quick Actions")
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             if st.button("🚀 Start Demo Chat", use_container_width=True):
@@ -864,19 +698,12 @@ def main():
                 if sources_data:
                     st.session_state.sources_data = sources_data
                     st.success("Sources refreshed!")
-        
-        with col4:
-            if st.button("🧪 Quick Evaluation", use_container_width=True):
-                st.info("Navigate to Evaluation Suite to run tests!")
     
     elif page == "💬 Chat Interface":
         chat_interface()
     
     elif page == "📚 Content Management":
         content_management()
-    
-    elif page == "📊 Evaluation Suite":
-        evaluation_suite()
     
     # Footer
     st.markdown("---")
