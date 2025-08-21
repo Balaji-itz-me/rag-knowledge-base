@@ -127,8 +127,8 @@ graph TB
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/rag-system.git
-cd rag-system
+git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git
+cd rag-knowledge-base
 ```
 
 2. **Create Virtual Environment**
@@ -178,7 +178,6 @@ API_RELOAD=true
 
 # Authentication
 SECRET_KEY=your-secret-key-here
-API_KEYS=demo-api-key-123,eval-key-456
 
 # Database
 VECTOR_DB_PATH=./data/vector_db
@@ -186,8 +185,8 @@ BM25_INDEX_PATH=./data/bm25_index
 
 # Model Configuration
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-LLM_MODEL=gpt-3.5-turbo
-OPENAI_API_KEY=your-openai-api-key
+LLM_MODEL=gemini-1.5-flash
+GOOGLE_API_KEY=your-google-api-key
 
 # Streamlit Configuration
 STREAMLIT_PORT=8501
@@ -211,7 +210,7 @@ SUPPORTED_MODELS = {
         "text-embedding-ada-002"
     ],
     "llm": [
-        "gpt-3.5-turbo",
+        "gemini-1.5-flash",
         "gpt-4",
         "claude-3-sonnet"
     ]
@@ -673,15 +672,15 @@ copies or substantial portions of the Software.
 
 ## 👨‍💻 Author
 
-**[Your Name]**
+**[BALAJI K]**
 - 🌐 Website: [yourwebsite.com](https://yourwebsite.com)
-- 📧 Email: your.email@example.com
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- 🐙 GitHub: [@yourgithub](https://github.com/yourgithub)
+- 📧 Email: balajikamaraj99@gmail.com
+- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/balaji-k-626613157/)
+- 🐙 GitHub: [@yourgithub](https://github.com/Balaji-itz-me)
 - 🐦 Twitter: [@yourtwitter](https://twitter.com/yourtwitter)
 
 ### Professional Background
-- 🎓 **Education**: [Your Degree] from [Your University]
+- 🎓 **Education**: [Masters in Chemistry] from [University of Delhi]
 - 💼 **Experience**: [Years] of experience in AI/ML and Software Engineering
 - 🏆 **Specializations**: RAG Systems, NLP, API Development, Cloud Architecture
 - 📚 **Interests**: Retrieval-Augmented Generation, Large Language Models, Information Retrieval
@@ -776,5 +775,3 @@ Thanks to early users who provided valuable feedback:
 - **Contributors**: 1 (open for more!)
 
 ---
-
-*Built with ❤️ for the AI community. Star ⭐ this repository if you found it helpful!*
