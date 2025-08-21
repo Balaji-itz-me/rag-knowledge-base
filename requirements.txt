@@ -1,42 +1,12 @@
-# Streamlit and Web Framework
-streamlit==1.28.1
-streamlit-option-menu==0.3.6
+# Core Streamlit
+streamlit>=1.28.0
 
-# HTTP Requests and API Communication
-requests==2.31.0
-urllib3==2.0.4
+# HTTP Requests
+requests>=2.25.0
 
-# Data Processing and Analysis
-pandas==2.1.1
-numpy==1.24.3
+# Data Processing
+pandas>=1.3.0
+numpy>=1.21.0
 
 # Data Visualization
-plotly==5.17.0
-matplotlib==3.7.2
-seaborn==0.12.2
-
-# Date and Time Handling
-python-dateutil==2.8.2
-
-# JSON and Data Serialization
-jsonschema==4.19.1
-
-# UUID Generation (built-in, but ensuring compatibility)
-uuid==1.30
-
-# Additional Utilities
-typing-extensions==4.8.0
-pydantic==2.4.2
-
-# Optional: For better error handling and logging
-loguru==0.7.2
-
-# Optional: For enhanced UI components
-streamlit-aggrid==0.3.4.post3
-streamlit-lottie==0.0.5
-
-# Optional: For file handling (if needed)
-pathlib==1.0.1
-
-# Optional: For enhanced metrics display
-streamlit-metrics==0.1.0
+plotly>=5.0.0
