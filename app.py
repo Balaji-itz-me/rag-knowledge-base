@@ -118,6 +118,10 @@ def init_session_state():
         st.session_state.system_health = {}
     if 'sources_data' not in st.session_state:
         st.session_state.sources_data = {}
+    if 'conversation_history' not in st.session_state:
+        st.session_state.conversation_history = {}  # Store conversations by session_id
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = "🏠 Dashboard"
 
 def check_session_timeout():
     """Check if the session has timed out"""
@@ -189,13 +193,13 @@ def authenticate_user():
             api_key = st.text_input(
                 "API Key",
                 type="password",
-                placeholder="Enter your API key (demo-api-key-123 or eval-key-456)",
-                help="Demo keys: demo-api-key-123, eval-key-456"
+                placeholder="Enter your API key",
+                help="Please enter a valid API key to access the system"
             )
             
             if st.button("🔐 Authenticate", use_container_width=True):
-                if api_key in DEMO_API_KEYS:
-                    # Test the API key
+                if api_key.strip():
+                    # Test any API key against the server
                     headers = {"Authorization": f"Bearer {api_key}"}
                     try:
                         response = requests.get(f"{API_BASE_URL}/health", headers=headers, timeout=10)
@@ -210,38 +214,30 @@ def authenticate_user():
                     except Exception as e:
                         st.error(f"❌ Connection failed: {str(e)}")
                 else:
-                    st.error("❌ Invalid API key. Use: demo-api-key-123 or eval-key-456")
+                    st.error("❌ Please enter a valid API key")
         
-        # Demo information
+        # System information (no API keys shown)
         st.markdown("---")
-        st.markdown("### 📋 Demo Information")
+        st.markdown("### 📋 System Information")
         
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("**🔑 Available API Keys:**")
-            st.code("demo-api-key-123")
-            st.code("eval-key-456")
+            st.markdown("**🤖 RAG System Features:**")
+            st.markdown("- 💬 Conversational AI Chat")
+            st.markdown("- 🧠 Context-Aware Responses")
+            st.markdown("- 🔍 Hybrid Search (BM25 + FAISS)")
         
         with col2:
-            st.markdown("**⚡ System Features:**")
-            st.markdown("- 💬 Conversational RAG Chat")
+            st.markdown("**⚡ Advanced Capabilities:**")
             st.markdown("- 📚 Dynamic URL Indexing")
             st.markdown("- 🔍 Source Management")
             st.markdown("- 📊 System Evaluation")
         
         return False
     else:
-        # Show session timer
+        # Session runs in background - no visible timer
         remaining = get_remaining_time()
-        if remaining > 0:
-            col1, col2, col3 = st.columns([2, 1, 1])
-            with col2:
-                st.markdown(f'<div class="timer-box">⏱️ Session: {format_time(remaining)}</div>', unsafe_allow_html=True)
-            with col3:
-                if st.button("🔄 Extend Session"):
-                    st.session_state.auth_time = datetime.now()
-                    st.rerun()
-        else:
+        if remaining <= 0:
             st.error("⏰ Session expired. Please re-authenticate.")
             st.session_state.authenticated = False
             st.rerun()
@@ -314,20 +310,42 @@ def chat_interface():
     """Main chat interface"""
     st.markdown("### 💬 Conversational RAG Interface")
     
+    # Initialize session if needed
+    if not st.session_state.session_id:
+        st.session_state.session_id = str(uuid.uuid4())
+        st.session_state.messages = []
+    
+    # Load conversation history for current session
+    if st.session_state.session_id in st.session_state.conversation_history:
+        st.session_state.messages = st.session_state.conversation_history[st.session_state.session_id]
+    
     # Session management
     col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
         if st.session_state.session_id:
-            st.info(f"📝 Session: {st.session_state.session_id[:8]}...")
+            st.info(f"📝 Active Session: {st.session_state.session_id[:8]}...")
     with col2:
         if st.button("🆕 New Session"):
+            # Save current conversation before creating new session
+            if st.session_state.session_id and st.session_state.messages:
+                st.session_state.conversation_history[st.session_state.session_id] = st.session_state.messages.copy()
+            
+            # Create new session
             st.session_state.session_id = str(uuid.uuid4())
             st.session_state.messages = []
             st.success("New session started!")
+            st.rerun()
     with col3:
         if st.button("🧹 Clear Chat"):
             st.session_state.messages = []
+            if st.session_state.session_id:
+                st.session_state.conversation_history[st.session_state.session_id] = []
             st.success("Chat cleared!")
+            st.rerun()
+    
+    # Show conversation counter
+    if len(st.session_state.conversation_history) > 1:
+        st.info(f"💾 You have {len(st.session_state.conversation_history)} conversation sessions saved")
     
     # Quick demo questions
     st.markdown("#### 🚀 Quick Demo Questions")
@@ -344,46 +362,55 @@ def chat_interface():
             if st.button(f"💡 {question}", key=f"demo_q_{i}"):
                 st.session_state.messages.append({"role": "user", "content": question})
                 process_chat_message(question)
+                # Save to conversation history
+                st.session_state.conversation_history[st.session_state.session_id] = st.session_state.messages.copy()
+                st.rerun()
     
     # Chat history display
     st.markdown("#### 💭 Conversation History")
     chat_container = st.container()
     
     with chat_container:
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f'<div class="chat-message user-message">👤 **You:** {message["content"]}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="chat-message assistant-message">🤖 **Assistant:** {message["content"]}</div>', unsafe_allow_html=True)
-                
-                # Show sources if available
-                if "sources" in message:
-                    st.markdown("**📚 Sources:**")
-                    for source in message["sources"]:
-                        st.markdown(f'<div class="source-link">🔗 {source}</div>', unsafe_allow_html=True)
+        if st.session_state.messages:
+            for message in st.session_state.messages:
+                if message["role"] == "user":
+                    st.markdown(f'<div class="chat-message user-message">👤 **You:** {message["content"]}</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div class="chat-message assistant-message">🤖 **Assistant:** {message["content"]}</div>', unsafe_allow_html=True)
+                    
+                    # Show sources if available
+                    if "sources" in message and message["sources"]:
+                        st.markdown("**📚 Sources:**")
+                        for source in message["sources"]:
+                            st.markdown(f'<div class="source-link">🔗 {source}</div>', unsafe_allow_html=True)
+        else:
+            st.info("👋 Start a conversation by asking a question or using the quick demo questions above!")
     
     # Chat input
     st.markdown("#### ✍️ Ask a Question")
-    user_input = st.text_area(
-        "Your question:",
-        placeholder="Ask anything about the knowledge base...",
-        height=100,
-        key="chat_input"
-    )
     
-    col1, col2, col3 = st.columns([1, 1, 2])
-    with col1:
-        use_dynamic = st.checkbox("Use Dynamic Index", value=True)
-    with col2:
-        use_reranker = st.checkbox("Use Reranker", value=True)
-    
-    if st.button("🚀 Send Message", use_container_width=True):
-        if user_input.strip():
+    with st.form(key="chat_form"):
+        user_input = st.text_area(
+            "Your question:",
+            placeholder="Ask anything about the knowledge base...",
+            height=100,
+            key="chat_input_form"
+        )
+        
+        col1, col2, col3 = st.columns([1, 1, 2])
+        with col1:
+            use_dynamic = st.checkbox("Use Dynamic Index", value=True)
+        with col2:
+            use_reranker = st.checkbox("Use Reranker", value=True)
+        
+        submit_button = st.form_submit_button("🚀 Send Message", use_container_width=True)
+        
+        if submit_button and user_input.strip():
             st.session_state.messages.append({"role": "user", "content": user_input})
             process_chat_message(user_input, use_dynamic, use_reranker)
+            # Save to conversation history
+            st.session_state.conversation_history[st.session_state.session_id] = st.session_state.messages.copy()
             st.rerun()
-        else:
-            st.warning("Please enter a message!")
 
 def process_chat_message(message: str, use_dynamic: bool = True, use_reranker: bool = True):
     """Process a chat message"""
@@ -761,11 +788,7 @@ def main():
     # Sidebar navigation
     st.sidebar.title("🧭 Navigation")
     
-    # Session info in sidebar
-    remaining_time = get_remaining_time()
-    st.sidebar.markdown(f"⏱️ **Session Time:** {format_time(remaining_time)}")
-    st.sidebar.markdown(f"🔑 **API Key:** {st.session_state.api_key[:12]}...")
-    
+    # Logout button only
     if st.sidebar.button("🚪 Logout"):
         st.session_state.authenticated = False
         st.session_state.api_key = ""
