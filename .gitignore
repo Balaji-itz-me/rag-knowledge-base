@@ -1,0 +1,38 @@
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# ---- Virtual Environments ----
+rag_demo/rag_env/
+.env
+.venv/
+venv/
+ENV/
+
+# ---- Jupyter / Colab ----
+.ipynb_checkpoints/
+*.ipynb
+
+# ---- Project Specific ----
+# Local environment variables
+rag_demo/.env
+
+# Conversation logs
+rag_demo/conversations/
+
+# Dynamic FAISS index files
+rag_demo/dynamic_index/faiss_index/
+rag_demo/faiss_index/
+
+# Data files (if you don’t want raw datasets in Git)
+rag_demo/data/
+
+# ---- System / IDE ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
