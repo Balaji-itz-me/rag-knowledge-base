@@ -11,8 +11,8 @@ import uuid
 
 # Page configuration
 st.set_page_config(
-    page_title="RAG System Demo",
-    page_icon="🤖",
+    page_title="RAG System",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -720,3 +720,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
