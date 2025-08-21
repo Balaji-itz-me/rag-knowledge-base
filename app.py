@@ -179,7 +179,7 @@ def make_api_request(endpoint: str, method: str = "GET", data: Dict = None, para
 
 def authenticate_user():
     """Handle user authentication"""
-    st.markdown('<div class="main-header">🤖 Conversational RAG System Demo</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Conversational RAG System</div>', unsafe_allow_html=True)
     
     if check_session_timeout():
         st.session_state.authenticated = False
@@ -720,4 +720,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
