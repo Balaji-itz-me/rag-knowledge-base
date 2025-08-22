@@ -744,7 +744,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - Portfolio: [yourportfolio.com](https://yourportfolio.com)
 - Email: balajikamaraj99@gmail.com
 - LinkedIn: [linkedin.com/in/balaji-k-626613157/](https://www.linkedin.com/in/balaji-k-626613157/)
-- GitHub: [@Balaji-itz-me](https://github.com/Balaji-itz-me/rag-knowledge-base)
+- GitHub: [@Balaji-itz-me](https://github.com/Balaji-itz-me)
 
 ### Professional Background
 - **Education**: Masters in Chemistry from University of Delhi
