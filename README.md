@@ -1,45 +1,47 @@
 # Conversational RAG System for Website Content Retrieval
 
-![RAG System Banner](https://img.shields.io/badge/RAG-System-blue) ![Python](https://img.shields.io/badge/Python-3.8+-green) ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red) ![Streamlit](https://img.shields.io/badge/Streamlit-Latest-orange)
+![RAG System Banner](https://img.shields.io/badge/RAG-System-blue) ![Python](https://img.shields.io/badge/Python-3.8+-green) ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red) ![Streamlit](https://img.shields.io/badge/Streamlit-Latest-orange) ![AWS](https://img.shields.io/badge/AWS-EC2-orange) ![Deployment](https://img.shields.io/badge/Deployment-Live-success)
 
 A production-ready Retrieval Augmented Generation (RAG) system designed to extract, process, and answer questions based on content from specific websites. This system combines advanced NLP techniques with modern web technologies to create an intelligent question-answering platform.
 
-## 🎥 Demo Video
+## Demo Video
 
 [![RAG System Demo](RAG_System_Streamlit.png)](https://www.linkedin.com/posts/balaji-k-626613157_rag-nlp-ai-activity-7364317125097738241-UujA?utm_source=share&utm_medium=member_desktop&rcm=ACoAACWk4L4BHp-HRG-mgVDRSaKjIjIYeY2cNIk)
 
 *Click the image above to watch the full system demonstration*
 
+**Live Application**: [https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
+
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [System Architecture](#-system-architecture)
-- [Business Use Cases](#-business-use-cases)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Usage](#-usage)
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Business Use Cases](#business-use-cases)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
   - [API Endpoints](#api-endpoints)
   - [Web Interface](#web-interface)
-- [Dataset](#-dataset)
-- [Technical Implementation](#-technical-implementation)
-- [Evaluation Metrics](#-evaluation-metrics)
-- [Deployment](#-deployment)
-- [API Documentation](#-api-documentation)
-- [Contributing](#-contributing)
-- [Troubleshooting](#-troubleshooting)
-- [License](#-license)
-- [Author](#-author)
-- [Acknowledgments](#-acknowledgments)
-- [References](#-references)
+- [Dataset](#dataset)
+- [Technical Implementation](#technical-implementation)
+- [Evaluation Metrics](#evaluation-metrics)
+- [Deployment](#deployment)
+- [API Documentation](#api-documentation)
+- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+- [Author](#author)
+- [Acknowledgments](#acknowledgments)
+- [References](#references)
 
 ---
 
-## 🌟 Overview
+## Overview
 
-This project implements a comprehensive Retrieval Augmented Generation (RAG) system that processes website content, stores it in a vector database, and provides intelligent question-answering capabilities with accurate source citations. The system is built using modern technologies including FastAPI for backend services, Streamlit for the user interface, and advanced NLP models for content processing.
+This project implements a comprehensive Retrieval Augmented Generation (RAG) system that processes website content, stores it in a vector database, and provides intelligent question-answering capabilities with accurate source citations. The system is built using modern technologies including FastAPI for backend services, Streamlit for the user interface, and Google's Gemini-1.5-Flash model for content processing.
 
 ### Problem Statement
 
@@ -47,35 +49,35 @@ Develop a RAG system to answer questions based on content from specific websites
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Functionality
-- **🔍 Intelligent Content Extraction**: Automated web scraping and content processing
-- **🧠 Vector-based Retrieval**: FAISS and BM25 hybrid search for optimal relevance
-- **💬 Conversational Interface**: Context-aware multi-turn conversations
-- **📚 Source Citation**: Accurate attribution of information sources
-- **🔄 Dynamic Indexing**: Real-time content indexing and updates
+- **Intelligent Content Extraction**: Automated web scraping and content processing
+- **Vector-based Retrieval**: FAISS and BM25 hybrid search for optimal relevance
+- **Conversational Interface**: Context-aware multi-turn conversations
+- **Source Citation**: Accurate attribution of information sources
+- **Dynamic Indexing**: Real-time content indexing and updates
 
 ### Technical Features
-- **🚀 RESTful API**: FastAPI-based backend with comprehensive endpoints
-- **🔐 Authentication System**: Secure API key-based authentication
-- **📊 System Monitoring**: Real-time health checks and performance metrics
-- **🎨 Modern UI**: Streamlit-powered responsive web interface
-- **☁️ Cloud Ready**: Containerized deployment with Docker support
+- **RESTful API**: FastAPI-based backend with comprehensive endpoints
+- **Authentication System**: Secure API key-based authentication
+- **System Monitoring**: Real-time health checks and performance metrics
+- **Modern UI**: Streamlit-powered responsive web interface
+- **Cloud Ready**: AWS EC2 deployment with Streamlit Cloud integration
 
 ### Advanced Capabilities
-- **🔗 Multi-source Processing**: Handle multiple websites simultaneously
-- **📈 Session Management**: Persistent conversation history
-- **⚡ Real-time Processing**: Live content indexing with progress tracking
-- **🎯 Configurable Search**: Adjustable retrieval parameters and reranking
+- **Multi-source Processing**: Handle multiple websites simultaneously
+- **Session Management**: Persistent conversation history
+- **Real-time Processing**: Live content indexing with progress tracking
+- **Configurable Search**: Adjustable retrieval parameters and reranking
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 graph TB
-    A[User Interface - Streamlit] --> B[FastAPI Backend]
+    A[User Interface - Streamlit Cloud] --> B[FastAPI Backend - AWS EC2]
     B --> C[Authentication Layer]
     C --> D[Content Processor]
     D --> E[Vector Database - FAISS]
@@ -84,28 +86,28 @@ graph TB
     G --> H[Retrieval System]
     H --> E
     H --> F
-    G --> I[Language Model]
+    G --> I[Gemini-1.5-Flash Model]
     I --> J[Response Generator]
     J --> K[Citation Engine]
     K --> A
 ```
 
 ### Component Overview
-- **Frontend**: Streamlit web application with responsive design
-- **Backend**: FastAPI server with async processing capabilities  
+- **Frontend**: Streamlit web application deployed on Streamlit Cloud
+- **Backend**: FastAPI server running on AWS EC2 with systemd
 - **Storage**: FAISS vector database + BM25 for hybrid search
-- **Processing**: Advanced NLP pipeline with embedding generation
-- **Security**: JWT-based authentication with session management
+- **Processing**: Advanced NLP pipeline with Gemini-1.5-Flash
+- **Security**: API key-based authentication with session management
 
 ---
 
-## 💼 Business Use Cases
+## Business Use Cases
 
 ### Primary Applications
-- **📖 Company Documentation Q&A**: Automated support for internal knowledge bases
-- **🎧 Customer Support**: Intelligent chatbots using website content
-- **🔍 Multi-source Information Retrieval**: Research and knowledge aggregation
-- **💡 Content-aware Chatbots**: Contextual conversations with citation capabilities
+- **Company Documentation Q&A**: Automated support for internal knowledge bases
+- **Customer Support**: Intelligent chatbots using website content
+- **Multi-source Information Retrieval**: Research and knowledge aggregation
+- **Content-aware Chatbots**: Contextual conversations with citation capabilities
 
 ### Industry Applications
 - **Enterprise Knowledge Management**
@@ -116,19 +118,20 @@ graph TB
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - Python 3.8+
 - Docker (optional)
 - Git
+- AWS Account (for cloud deployment)
 
 ### Local Setup
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git
-cd rag-knowledge-base
+git clone https://github.com/yourusername/rag-system.git
+cd rag-system
 ```
 
 2. **Create Virtual Environment**
@@ -164,7 +167,7 @@ docker-compose up --build
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -178,6 +181,7 @@ API_RELOAD=true
 
 # Authentication
 SECRET_KEY=your-secret-key-here
+API_KEYS=your-api-key-1,your-api-key-2
 
 # Database
 VECTOR_DB_PATH=./data/vector_db
@@ -199,7 +203,7 @@ LOG_FILE=./logs/rag_system.log
 
 ### Model Configuration
 
-The system supports various embedding models and LLMs:
+The system supports various embedding models and LLMs, with Gemini-1.5-Flash as the default free-tier option:
 
 ```python
 # config.py
@@ -210,7 +214,8 @@ SUPPORTED_MODELS = {
         "text-embedding-ada-002"
     ],
     "llm": [
-        "gemini-1.5-flash",
+        "gemini-1.5-flash",  # Default free-tier model
+        "gpt-3.5-turbo",
         "gpt-4",
         "claude-3-sonnet"
     ]
@@ -219,7 +224,7 @@ SUPPORTED_MODELS = {
 
 ---
 
-## 💻 Usage
+## Usage
 
 ### API Endpoints
 
@@ -287,28 +292,24 @@ Response:
 
 ### Web Interface
 
-1. **Start the Application**
-```bash
-# Start API server
-uvicorn main:app --host 0.0.0.0 --port 8000
+1. **Access the Live Application**
+   - Production: [https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
+   - Local: `http://localhost:8501`
 
-# Start Streamlit UI (in another terminal)
-streamlit run streamlit_app.py --server.port 8501
-```
+2. **Authentication**
+   - Enter your API key for secure access
+   - Session timeout: 30 minutes
 
-2. **Access the Interface**
-- Navigate to `http://localhost:8501`
-- Enter your API key for authentication
-- Explore the features:
-  - **Dashboard**: System overview and health monitoring
-  - **Chat Interface**: Interactive Q&A with the RAG system
-  - **Content Management**: Add and manage website sources
+3. **Explore Features**
+   - **Dashboard**: System overview and health monitoring
+   - **Chat Interface**: Interactive Q&A with the RAG system
+   - **Content Management**: Add and manage website sources
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-### Provided Websites
+### Processed Websites
 
 The system processes the following technical AI/ML content:
 
@@ -329,7 +330,7 @@ The system processes the following technical AI/ML content:
 
 ---
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### Core Technologies
 
@@ -337,17 +338,17 @@ The system processes the following technical AI/ML content:
 - **FastAPI**: High-performance async web framework
 - **Pydantic**: Data validation and settings management
 - **SQLAlchemy**: Database ORM (if using persistent storage)
-- **Celery**: Background task processing (optional)
+- **Systemd**: Process management on AWS EC2
 
 #### NLP & ML Stack
+- **Google Gemini-1.5-Flash**: Primary language model (free tier)
 - **Sentence Transformers**: Embedding generation
 - **FAISS**: Vector similarity search
 - **Rank-BM25**: Statistical text retrieval
 - **LangChain**: LLM orchestration and prompt management
-- **OpenAI/Anthropic**: Language model APIs
 
 #### Frontend & UI
-- **Streamlit**: Rapid web app development
+- **Streamlit**: Rapid web app development deployed on Streamlit Cloud
 - **Plotly**: Interactive data visualization
 - **Pandas**: Data manipulation and display
 
@@ -379,7 +380,7 @@ def generate_response(query: str, context: List[str], history: List[dict]) -> st
         conversation_history=history[-3:]  # Last 3 turns
     )
     
-    response = llm.generate(
+    response = gemini_model.generate(
         prompt=prompt,
         max_tokens=500,
         temperature=0.1
@@ -390,7 +391,7 @@ def generate_response(query: str, context: List[str], history: List[dict]) -> st
 
 ---
 
-## 📈 Evaluation Metrics
+## Evaluation Metrics
 
 ### Accuracy Metrics
 - **Relevance Score**: Semantic similarity between query and retrieved documents
@@ -422,27 +423,86 @@ def generate_response(query: str, context: List[str], history: List[dict]) -> st
 
 ---
 
-## ☁️ Deployment
+## Deployment
 
-### Cloud Platform Deployment
+### Production Architecture
 
-#### AWS Deployment
+The system is deployed using a hybrid cloud approach:
+
+#### AWS EC2 Backend Deployment
+- **Instance Type**: AWS EC2 (Linux-based)
+- **Process Management**: Systemd for service reliability
+- **Code Deployment**: Git-based deployment with automated scripts
+- **Storage**: Static and dynamic content folders in repository
+
+#### Streamlit Cloud Frontend
+- **Platform**: Streamlit Cloud hosting
+- **Integration**: Direct connection to AWS EC2 API
+- **URL**: https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/
+
+### AWS EC2 Deployment Process
+
+1. **Instance Setup**
 ```bash
-# Using AWS ECS with Fargate
-aws ecs create-cluster --cluster-name rag-system
-aws ecs run-task --cluster rag-system --task-definition rag-task
+# Launch EC2 instance and connect via SSH
+ssh -i your-key.pem ec2-user@your-instance-ip
+
+# Install required packages
+sudo yum update -y
+sudo yum install python3 python3-pip git -y
 ```
 
-#### Google Cloud Platform
+2. **Repository Deployment**
 ```bash
-# Using Cloud Run
-gcloud run deploy rag-system --image gcr.io/PROJECT-ID/rag-system
+# Clone repository
+git clone https://github.com/yourusername/rag-system.git
+cd rag-system
+
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Setup directories and permissions
+mkdir -p data/vector_db data/bm25_index logs
+chmod +x deploy.sh
 ```
 
-#### Azure Container Instances
+3. **Systemd Service Configuration**
 ```bash
-# Deploy to Azure
-az container create --resource-group rag-rg --name rag-system
+# Run deployment script
+./deploy.sh
+
+# The script handles:
+# - Environment setup
+# - Service registration with systemd
+# - Process management
+# - Log configuration
+```
+
+4. **Service Management**
+```bash
+# Start the service
+sudo systemctl start rag-system
+sudo systemctl enable rag-system
+
+# Monitor service status
+sudo systemctl status rag-system
+
+# View logs
+sudo journalctl -u rag-system -f
+```
+
+### Repository Structure
+```
+rag-system/
+├── main.py              # FastAPI application entry point
+├── requirements.txt     # Python dependencies
+├── deploy.sh           # Deployment automation script
+├── data/
+│   ├── static/         # Pre-indexed static content
+│   └── dynamic/        # Runtime-indexed content
+├── src/                # Source code modules
+├── tests/              # Test suite
+└── docs/               # Documentation
 ```
 
 ### Docker Production Setup
@@ -456,9 +516,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-EXPOSE 8000 8501
+EXPOSE 8000
 
-CMD ["./start.sh"]
+CMD ["./deploy.sh"]
 ```
 
 ### Kubernetes Deployment
@@ -494,15 +554,15 @@ spec:
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 ### Interactive Documentation
 
 Once the API server is running, access comprehensive API documentation at:
 
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-- **OpenAPI Spec**: `http://localhost:8000/openapi.json`
+- **Swagger UI**: `http://your-ec2-ip:8000/docs`
+- **ReDoc**: `http://your-ec2-ip:8000/redoc`
+- **OpenAPI Spec**: `http://your-ec2-ip:8000/openapi.json`
 
 ### Authentication Flow
 
@@ -511,20 +571,20 @@ Once the API server is running, access comprehensive API documentation at:
 import requests
 
 headers = {
-    "Authorization": "Bearer your-api-key",
+    "Authorization": "Bearer your-secure-api-key",
     "Content-Type": "application/json"
 }
 
 # Index new content
 response = requests.post(
-    "http://localhost:8000/api/v1/index",
+    "http://your-ec2-ip:8000/api/v1/index",
     headers=headers,
     json={"url": ["https://example.com"]}
 )
 
 # Chat with the system
 response = requests.post(
-    "http://localhost:8000/api/v1/chat",
+    "http://your-ec2-ip:8000/api/v1/chat",
     headers=headers,
     json={
         "messages": [{"role": "user", "content": "What is RAG?"}],
@@ -535,7 +595,7 @@ response = requests.post(
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please follow these guidelines:
 
@@ -585,14 +645,14 @@ pytest --cov=src tests/
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
 #### Authentication Errors
 ```bash
 Error: 401 Unauthorized
-Solution: Verify API key is correctly set in headers
+Solution: Verify API key is correctly configured and valid
 ```
 
 #### Index Creation Fails
@@ -600,7 +660,7 @@ Solution: Verify API key is correctly set in headers
 Error: Failed to create vector index
 Solutions:
 1. Check internet connectivity for web scraping
-2. Verify sufficient disk space
+2. Verify sufficient disk space on EC2 instance
 3. Ensure proper permissions on data directory
 ```
 
@@ -610,7 +670,7 @@ Error: Out of memory during embedding generation
 Solutions:
 1. Reduce batch size in config
 2. Use smaller embedding model
-3. Increase system RAM or use swap
+3. Upgrade EC2 instance type
 ```
 
 ### Performance Optimization
@@ -630,70 +690,77 @@ def cached_embedding(text: str) -> np.ndarray:
     return embedding_model.encode(text)
 ```
 
-### Monitoring and Logging
+### AWS EC2 Monitoring
 
-```python
-# Configure logging
-import logging
+```bash
+# Monitor system resources
+top
+htop
+df -h
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/rag_system.log'),
-        logging.StreamHandler()
-    ]
-)
+# Check service logs
+sudo journalctl -u rag-system -f
+
+# Monitor API performance
+curl http://localhost:8000/health
 ```
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ```
-MIT License
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
 
-Copyright (c) 2024 [Your Name]
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   1. Definitions.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 ```
 
 ---
 
-## 👨‍💻 Author
+## Author
 
-**[BALAJI K]**
-- 🌐 Website: [yourwebsite.com](https://yourwebsite.com)
-- 📧 Email: balajikamaraj99@gmail.com
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/balaji-k-626613157/)
-- 🐙 GitHub: [@yourgithub](https://github.com/Balaji-itz-me)
-- 🐦 Twitter: [@yourtwitter](https://twitter.com/yourtwitter)
+**[Your Name]**
+- Portfolio: [yourportfolio.com](https://yourportfolio.com)
+- Email: your.email@example.com
+- LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
+- GitHub: [@yourgithub](https://github.com/yourgithub)
 
 ### Professional Background
-- 🎓 **Education**: [Masters in Chemistry] from [University of Delhi]
-- 💼 **Experience**: [Years] of experience in AI/ML and Software Engineering
-- 🏆 **Specializations**: RAG Systems, NLP, API Development, Cloud Architecture
-- 📚 **Interests**: Retrieval-Augmented Generation, Large Language Models, Information Retrieval
+- **Education**: [Your Degree] from [Your University]
+- **Specializations**: RAG Systems, NLP, API Development, Cloud Architecture (AWS)
+- **Interests**: Retrieval-Augmented Generation, Large Language Models, Information Retrieval
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 ### Technical Inspirations
 - **LangChain Team** for the excellent framework for LLM applications
 - **Sentence Transformers** community for pre-trained embedding models
 - **FAISS Team** at Facebook AI Research for efficient similarity search
 - **FastAPI** creators for the amazing async web framework
+- **Google AI** for providing Gemini-1.5-Flash free tier model
 
 ### Dataset Sources
 Special thanks to the authors of the processed content:
@@ -703,12 +770,17 @@ Special thanks to the authors of the processed content:
 - **Quora Engineering** for practical embedding search implementation
 
 ### Open Source Libraries
-- 🤗 **Hugging Face**: Transformers and model hub
-- 🔍 **FAISS**: Facebook AI Similarity Search
-- ⚡ **FastAPI**: Modern web framework for APIs
-- 🎨 **Streamlit**: Rapid web app development
-- 📊 **Plotly**: Interactive data visualization
-- 🐼 **Pandas**: Data manipulation and analysis
+- **Hugging Face**: Transformers and model hub
+- **FAISS**: Facebook AI Similarity Search
+- **FastAPI**: Modern web framework for APIs
+- **Streamlit**: Rapid web app development
+- **Plotly**: Interactive data visualization
+- **Pandas**: Data manipulation and analysis
+
+### Cloud Platforms
+- **Amazon Web Services (AWS)** for reliable EC2 hosting
+- **Streamlit Cloud** for seamless frontend deployment
+- **GitHub** for version control and collaboration
 
 ### Community Support
 - **Stack Overflow** community for troubleshooting assistance
@@ -716,15 +788,9 @@ Special thanks to the authors of the processed content:
 - **Towards Data Science** for educational content
 - **Papers With Code** for implementation references
 
-### Beta Testers
-Thanks to early users who provided valuable feedback:
-- [Beta Tester 1] - UI/UX improvements
-- [Beta Tester 2] - Performance optimization suggestions
-- [Beta Tester 3] - API design feedback
-
 ---
 
-## 📖 References
+## References
 
 ### Academic Papers
 1. **RAG: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks**
@@ -745,6 +811,7 @@ Thanks to early users who provided valuable feedback:
 - [FAISS Documentation](https://faiss.ai/)
 - [Sentence Transformers Documentation](https://www.sbert.net/)
 - [LangChain Documentation](https://python.langchain.com/)
+- [Google AI Gemini Documentation](https://ai.google.dev/docs)
 
 ### Industry Articles
 - [Building RAG Systems: A Comprehensive Guide](https://example.com/rag-guide)
@@ -752,15 +819,14 @@ Thanks to early users who provided valuable feedback:
 - [API Design Best Practices](https://example.com/api-best-practices)
 - [Deploying ML Models at Scale](https://example.com/ml-deployment)
 
-### Tutorials and Guides
-- [RAG Implementation from Scratch](https://example.com/rag-tutorial)
-- [FastAPI Advanced Patterns](https://example.com/fastapi-advanced)
-- [Vector Search Optimization](https://example.com/vector-search)
-- [Authentication in AI Applications](https://example.com/auth-guide)
+### AWS Resources
+- [AWS EC2 Documentation](https://docs.aws.amazon.com/ec2/)
+- [Systemd Service Management](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
+- [AWS Security Best Practices](https://aws.amazon.com/architecture/security-identity-compliance/)
 
 ---
 
-## 📊 Project Statistics
+## Project Statistics
 
 ![GitHub stars](https://img.shields.io/github/stars/yourusername/rag-system?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/yourusername/rag-system?style=social)
@@ -771,7 +837,5 @@ Thanks to early users who provided valuable feedback:
 - **Lines of Code**: ~5,000
 - **Test Coverage**: 85%
 - **Documentation Coverage**: 95%
-- **Development Time**: 3 months
+- **Development Time**: 1 month
 - **Contributors**: 1 (open for more!)
-
----
