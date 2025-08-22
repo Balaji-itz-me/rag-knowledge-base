@@ -75,7 +75,7 @@ Develop a RAG system to answer questions based on content from specific websites
 
 ## System Architecture
 
-- **"End-to-end RAG pipeline: from user query → secure processing → hybrid retrieval → Gemini-powered answer generation → citation-backed response."
+End-to-end RAG pipeline: from user query → secure processing → hybrid retrieval → Gemini-powered answer generation → citation-backed response.
 
 ```mermaid
 graph TB
