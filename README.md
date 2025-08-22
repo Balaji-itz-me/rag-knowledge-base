@@ -75,21 +75,36 @@ Develop a RAG system to answer questions based on content from specific websites
 
 ## System Architecture
 
+- **"End-to-end RAG pipeline: from user query → secure processing → hybrid retrieval → Gemini-powered answer generation → citation-backed response."
+
 ```mermaid
 graph TB
-    A[User Interface - Streamlit Cloud] --> B[FastAPI Backend - AWS EC2]
-    B --> C[Authentication Layer]
-    C --> D[Content Processor]
-    D --> E[Vector Database - FAISS]
-    D --> F[BM25 Index]
-    B --> G[Chat Engine]
-    G --> H[Retrieval System]
-    H --> E
-    H --> F
-    G --> I[Gemini-1.5-Flash Model]
-    I --> J[Response Generator]
-    J --> K[Citation Engine]
-    K --> A
+    %% User Input & UI
+    A[User Interface - Streamlit Cloud] -- "User Query" --> B[FastAPI Backend - AWS EC2]
+
+    %% Backend & Auth
+    B -- "Auth Request" --> C[Authentication Layer]
+    C -- "Validated Request" --> D[Content Processor]
+
+    %% Content Processing
+    D -- "Website Content → Embeddings" --> E[Vector Database - FAISS]
+    D -- "Website Content → Tokens" --> F[BM25 Index]
+
+    %% Retrieval Flow
+    B -- "Forward Query" --> G[Chat Engine]
+    G -- "Search Request" --> H[Retrieval System]
+    H -- "Semantic Search" --> E
+    H -- "Keyword Search" --> F
+    H -- "Relevant Docs" --> G
+
+    %% LLM Integration
+    G -- "Query + Context" --> I[Gemini-1.5-Flash Model]
+    I -- "Generated Answer" --> J[Response Generator]
+    J -- "Answer + Sources" --> K[Citation Engine]
+
+    %% Final Response
+    K -- "Cited Response" --> A
+
 ```
 
 ### Component Overview
