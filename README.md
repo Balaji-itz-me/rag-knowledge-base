@@ -828,10 +828,15 @@ Special thanks to the authors of the processed content:
 
 ## Project Statistics
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/rag-system?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/rag-system?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/rag-system)
-![GitHub license](https://img.shields.io/github/license/yourusername/rag-system)
+![GitHub stars](https://img.shields.io/github/stars/Balaji-itz-me/rag-knowledge-base?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Balaji-itz-me/rag-knowledge-base?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Balaji-itz-me/rag-knowledge-base)
+![GitHub license](https://img.shields.io/github/license/Balaji-itz-me/rag-knowledge-base)
+![GitHub last commit](https://img.shields.io/github/last-commit/Balaji-itz-me/rag-knowledge-base)
+![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
+
 
 ### Development Metrics
 - **Lines of Code**: ~5,000
