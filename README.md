@@ -130,8 +130,8 @@ graph TB
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/rag-system.git
-cd rag-system
+git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git
+cd rag-knowledge-base
 ```
 
 2. **Create Virtual Environment**
@@ -455,8 +455,8 @@ sudo yum install python3 python3-pip git -y
 2. **Repository Deployment**
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/rag-system.git
-cd rag-system
+git clone https://github.com/Balaji-itz-me/rag-knowledge-base.git
+cd rag-knowledge-base
 
 # Install dependencies
 pip3 install -r requirements.txt
@@ -742,12 +742,12 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 **[Your Name]**
 - Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- Email: your.email@example.com
-- LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- GitHub: [@yourgithub](https://github.com/yourgithub)
+- Email: balajikamaraj99@gmail.com
+- LinkedIn: [linkedin.com/in/balaji-k-626613157/](https://www.linkedin.com/in/balaji-k-626613157/)
+- GitHub: [@Balaji-itz-me](https://github.com/Balaji-itz-me/rag-knowledge-base/edit/main/README.md)
 
 ### Professional Background
-- **Education**: [Your Degree] from [Your University]
+- **Education**: Masters in Chemistry from University of Delhi
 - **Specializations**: RAG Systems, NLP, API Development, Cloud Architecture (AWS)
 - **Interests**: Retrieval-Augmented Generation, Large Language Models, Information Retrieval
 
