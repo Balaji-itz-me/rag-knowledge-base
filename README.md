@@ -755,7 +755,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Author
 
-**[Your Name]**
+**[BALAJI K]**
 - Portfolio: [yourportfolio.com](https://yourportfolio.com)
 - Email: balajikamaraj99@gmail.com
 - LinkedIn: [linkedin.com/in/balaji-k-626613157/](https://www.linkedin.com/in/balaji-k-626613157/)
