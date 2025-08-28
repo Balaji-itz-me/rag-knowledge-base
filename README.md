@@ -331,7 +331,7 @@ The system processes the following technical AI/ML content:
 | Website | Topic | Description |
 |---------|-------|-------------|
 | [Huyen Chip - GenAI Platform](https://huyenchip.com/2024/07/25/genai-platform.html) | AI Infrastructure | Comprehensive guide to building GenAI platforms |
-| [Lilian Weng - Hallucination](https://lilianweng.github.io/posts/2024-07-07-hallucinatio) | AI Safety | Deep dive into AI hallucination problems |
+| [Lilian Weng - Hallucination](https://lilianweng.github.io/posts/2024-07-07-hallucination/) | AI Safety | Deep dive into AI hallucination problems |
 | [Jina AI - ColBERT](https://jina.ai/news/what-is-colbert-and-late-interaction-and-why-they-matter-in-search/) | Search Technology | ColBERT and late interaction in search systems |
 | [Quora Engineering - Embedding Search](https://quoraengineering.quora.com/Building-Embedding-Search-at-Quora) | Search Infrastructure | Building production embedding search systems |
 
