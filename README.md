@@ -425,17 +425,7 @@ def generate_response(query: str, context: List[str], history: List[dict]) -> st
 - **Error Rate**: Failed requests per total requests
 - **Concurrent Users**: Maximum simultaneous user support
 - **Scalability**: Performance under increasing load
-
-### Benchmarking Results
-
-| Metric | Target | Achieved |
-|--------|--------|----------|
-| Response Time | < 2s | 1.3s avg |
-| Relevance Score | > 85% | 87.2% |
-| Citation Accuracy | > 90% | 93.5% |
-| Context Retention | > 80% | 85.1% |
-| System Uptime | > 99% | 99.7% |
-
+  
 ---
 
 ## Deployment
