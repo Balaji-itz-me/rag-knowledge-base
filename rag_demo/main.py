@@ -930,7 +930,7 @@ def initialize_models():
         
         # Initialize LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="models/gemini-2.5-flash",
             temperature=0,
             google_api_key=os.environ["GOOGLE_API_KEY"]
         )
