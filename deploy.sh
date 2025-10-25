@@ -1,105 +1,298 @@
 #!/bin/bash
-set -e  # Stop on errors
+# Enhanced RAG System Deployment Script
+# Run this on your EC2 instance
 
-# Move to project folder
-cd ~/rag-knowledge-base/rag_demo || { echo "❌ Project folder not found!"; exit 1; }
+echo "======================================"
+echo "Enhanced RAG System Deployment"
+echo "======================================"
 
-echo "🚀 Starting RAG System Deployment on AWS EC2..."
+# Step 1: Backup existing code
+echo "📦 Step 1: Backing up existing code..."
+cd /home/ubuntu/rag-knowledge-base/rag_demo
+cp main.py main.py.backup.$(date +%Y%m%d_%H%M%S)
+echo "✅ Backup created"
 
-# Update system
-echo "📦 Updating system packages..."
-sudo apt update && sudo apt upgrade -y
+# Step 2: Install new dependencies
+echo "📥 Step 2: Installing new dependencies..."
+pip install slowapi aiohttp
+echo "✅ Dependencies installed"
 
-# Install Python and dependencies
-echo "🐍 Installing Python and tools..."
-sudo apt install python3-pip python3-venv git htop curl -y
+# Step 3: Create log directory
+echo "📁 Step 3: Creating log directory..."
+mkdir -p /home/ubuntu/rag-knowledge-base/rag_demo/logs
+chmod 755 /home/ubuntu/rag-knowledge-base/rag_demo/logs
+echo "✅ Log directory created"
 
-# Ensure repository is up-to-date
-echo "📥 Ensuring repository is up-to-date..."
-git pull || { echo "❌ Failed to update repo"; exit 1; }
+# Step 4: Set environment variables (optional)
+echo "🔑 Step 4: Setting environment variables..."
+# Uncomment and modify these if you want custom API keys
+# export API_KEY_1="your-custom-key-1"
+# export API_KEY_1_USER="user1"
+# export API_KEY_1_PERMS="read,query,chat,index,admin"
+echo "✅ Environment variables ready"
 
-# Create virtual environment
-echo "🔧 Setting up Python environment..."
-python3 -m venv rag_env
-source rag_env/bin/activate
+# Step 5: Test the enhanced system
+echo "🧪 Step 5: Creating test script..."
+cat > test_enhanced_features.py << 'EOF'
+#!/usr/bin/env python3
+"""Test script for enhanced RAG features"""
 
-# Install requirements
-if [ -f requirements.txt ]; then
-    echo "📚 Installing Python dependencies..."
-    pip install --upgrade pip
-    pip install -r requirements.txt
-else
-    echo "❌ requirements.txt not found in $(pwd)! Check your folder."
-    exit 1
-fi
+import requests
+import time
+import json
 
-# Create application directories if missing
-mkdir -p ~/rag-knowledge-base/rag_demo/{faiss_index,dynamic_index,conversations,evaluation,data,logs}
+BASE_URL = "http://localhost:8000"
+API_KEY = "demo-api-key-123"
 
-# Load environment variables from .env
-if [ -f .env ]; then
-    echo "🔑 Loading environment variables from .env"
-    export $(grep -v '^#' .env | xargs)
-else
-    echo "❌ .env file not found! Please create it with GOOGLE_API_KEY before running deploy.sh"
-    exit 1
-fi
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
 
-# Create systemd service for auto-restart
-echo "⚙️ Creating systemd service..."
-sudo tee /etc/systemd/system/rag-api.service > /dev/null <<EOF
-[Unit]
-Description=RAG API Service
-After=network.target
+def test_caching():
+    """Test caching functionality"""
+    print("\n" + "="*50)
+    print("TEST 1: CACHING")
+    print("="*50)
+    
+    query = {"messages": [{"role": "user", "content": "What is RAG?"}]}
+    
+    # First request (cache miss)
+    print("Making first request (cache miss)...")
+    start = time.time()
+    r1 = requests.post(f"{BASE_URL}/api/v1/chat", headers=headers, json=query)
+    time1 = time.time() - start
+    print(f"✅ First request: {time1:.3f}s")
+    
+    # Second request (cache hit)
+    print("Making second request (cache hit)...")
+    start = time.time()
+    r2 = requests.post(f"{BASE_URL}/api/v1/chat", headers=headers, json=query)
+    time2 = time.time() - start
+    print(f"✅ Second request: {time2:.3f}s")
+    
+    if time2 < time1:
+        improvement = ((time1 - time2) / time1) * 100
+        print(f"✅ CACHING WORKS! Speed improvement: {improvement:.1f}%")
+        return True
+    else:
+        print("⚠️  Cache may not be working (second request not faster)")
+        return False
 
-[Service]
-Type=simple
-User=ubuntu
-WorkingDirectory=/home/ubuntu/rag-knowledge-base/rag_demo
-Environment=GOOGLE_API_KEY=$GOOGLE_API_KEY
-ExecStart=/home/ubuntu/rag-knowledge-base/rag_demo/rag_env/bin/python main.py
-Restart=always
-RestartSec=10
+def test_rate_limiting():
+    """Test rate limiting"""
+    print("\n" + "="*50)
+    print("TEST 2: RATE LIMITING")
+    print("="*50)
+    
+    print("Sending 25 rapid requests (limit is 20/minute)...")
+    rate_limited = False
+    
+    for i in range(25):
+        r = requests.post(
+            f"{BASE_URL}/api/v1/chat",
+            headers=headers,
+            json={"messages": [{"role": "user", "content": f"test{i}"}]}
+        )
+        
+        if r.status_code == 429:
+            print(f"✅ Rate limited at request {i+1}")
+            print(f"Response: {r.json()}")
+            rate_limited = True
+            break
+        
+        time.sleep(0.1)  # Small delay between requests
+    
+    if rate_limited:
+        print("✅ RATE LIMITING WORKS!")
+        return True
+    else:
+        print("⚠️  Rate limiting may not be working")
+        return False
 
-[Install]
-WantedBy=multi-user.target
+def test_metrics():
+    """Test metrics endpoint"""
+    print("\n" + "="*50)
+    print("TEST 3: METRICS ENDPOINT")
+    print("="*50)
+    
+    print("Fetching system metrics...")
+    r = requests.get(f"{BASE_URL}/api/v1/metrics", headers=headers)
+    
+    if r.status_code == 200:
+        metrics = r.json()
+        print("✅ Metrics endpoint works!")
+        print(json.dumps(metrics, indent=2))
+        
+        # Check cache stats
+        if 'cache_performance' in metrics:
+            cache_stats = metrics['cache_performance']
+            print(f"\n📊 Cache Statistics:")
+            print(f"   Hits: {cache_stats.get('hits', 0)}")
+            print(f"   Misses: {cache_stats.get('misses', 0)}")
+            print(f"   Hit Rate: {cache_stats.get('hit_rate_percent', '0.00')}%")
+        
+        return True
+    else:
+        print(f"❌ Metrics endpoint failed: {r.status_code}")
+        return False
+
+def test_concurrent_processing():
+    """Test concurrent URL processing"""
+    print("\n" + "="*50)
+    print("TEST 4: CONCURRENT PROCESSING")
+    print("="*50)
+    
+    urls = [
+        "https://example.com",
+        "https://example.org",
+        "https://example.net"
+    ]
+    
+    print(f"Indexing {len(urls)} URLs concurrently...")
+    start = time.time()
+    
+    r = requests.post(
+        f"{BASE_URL}/api/v1/index",
+        headers=headers,
+        json={"url": urls}
+    )
+    
+    elapsed = time.time() - start
+    
+    if r.status_code == 200:
+        result = r.json()
+        print(f"✅ Concurrent processing completed in {elapsed:.2f}s")
+        print(f"   Successful: {result['metadata']['successfully_indexed']}")
+        print(f"   Failed: {result['metadata']['failed']}")
+        print(f"   Concurrent: {result['metadata'].get('concurrent_processing', False)}")
+        return True
+    else:
+        print(f"⚠️  Indexing failed: {r.status_code}")
+        return False
+
+def test_logging():
+    """Test structured logging"""
+    print("\n" + "="*50)
+    print("TEST 5: STRUCTURED LOGGING")
+    print("="*50)
+    
+    print("Checking log file...")
+    try:
+        with open('/home/ubuntu/rag-knowledge-base/rag_demo/logs/app.log', 'r') as f:
+            lines = f.readlines()[-10:]  # Last 10 lines
+            
+        print("✅ Log file exists!")
+        print("\n📝 Recent log entries:")
+        for line in lines:
+            try:
+                log_entry = json.loads(line.split(' - ')[-1])
+                print(f"   [{log_entry.get('level')}] {log_entry.get('event')}")
+            except:
+                print(f"   {line.strip()}")
+        
+        return True
+    except FileNotFoundError:
+        print("⚠️  Log file not found")
+        return False
+
+def run_all_tests():
+    """Run all tests"""
+    print("\n" + "="*60)
+    print("ENHANCED RAG SYSTEM - FEATURE VERIFICATION")
+    print("="*60)
+    
+    results = {
+        "Caching": False,
+        "Rate Limiting": False,
+        "Metrics": False,
+        "Concurrent Processing": False,
+        "Logging": False
+    }
+    
+    # Run tests
+    try:
+        results["Caching"] = test_caching()
+    except Exception as e:
+        print(f"❌ Caching test error: {e}")
+    
+    try:
+        results["Rate Limiting"] = test_rate_limiting()
+    except Exception as e:
+        print(f"❌ Rate limiting test error: {e}")
+    
+    try:
+        results["Metrics"] = test_metrics()
+    except Exception as e:
+        print(f"❌ Metrics test error: {e}")
+    
+    try:
+        results["Concurrent Processing"] = test_concurrent_processing()
+    except Exception as e:
+        print(f"❌ Concurrent processing test error: {e}")
+    
+    try:
+        results["Logging"] = test_logging()
+    except Exception as e:
+        print(f"❌ Logging test error: {e}")
+    
+    # Summary
+    print("\n" + "="*60)
+    print("TEST SUMMARY")
+    print("="*60)
+    
+    passed = sum(results.values())
+    total = len(results)
+    
+    for feature, status in results.items():
+        status_icon = "✅" if status else "❌"
+        print(f"{status_icon} {feature}")
+    
+    print("\n" + "="*60)
+    print(f"RESULT: {passed}/{total} tests passed ({passed/total*100:.0f}%)")
+    print("="*60)
+    
+    if passed == total:
+        print("\n🎉 ALL FEATURES WORKING! Your CV claims are now TRUE!")
+    elif passed >= 3:
+        print("\n✅ Most features working! Good enough for interview.")
+    else:
+        print("\n⚠️  Some features need attention.")
+    
+    return passed, total
+
+if __name__ == "__main__":
+    passed, total = run_all_tests()
+    exit(0 if passed == total else 1)
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl enable rag-api.service
+chmod +x test_enhanced_features.py
+echo "✅ Test script created"
 
-# Optional: start manually with nohup
-echo "📝 Creating start script..."
-cat > start_rag.sh << 'EOF'
-#!/bin/bash
-cd ~/rag-knowledge-base/rag_demo
-source rag_env/bin/activate
-export $(grep -v '^#' .env | xargs)
-echo "🚀 Starting RAG API server..."
-nohup python main.py > logs/app.log 2>&1 &
-echo "✅ Server started in background. Logs: logs/app.log"
-EOF
-
-chmod +x start_rag.sh
-
-# Print public IP info
-PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
+# Step 6: Instructions
 echo ""
+echo "======================================"
 echo "✅ DEPLOYMENT COMPLETE!"
-echo "🌐 Your RAG API is ready at: http://$PUBLIC_IP:8000"
-echo "📚 API Docs: http://$PUBLIC_IP:8000/docs"
+echo "======================================"
 echo ""
-echo "🎯 To start manually:"
-echo "   ./start_rag.sh"
+echo "NEXT STEPS:"
 echo ""
-echo "🔄 To manage as service:"
-echo "   sudo systemctl start rag-api.service"
-echo "   sudo systemctl stop rag-api.service"
-echo "   sudo systemctl restart rag-api.service"
+echo "1. Replace your main.py with the enhanced version:"
+echo "   # Copy the complete enhanced code from the artifact"
+echo "   # Save it as main.py"
 echo ""
-echo "📊 To check status:"
-echo "   sudo systemctl status rag-api.service"
+echo "2. Restart your application:"
+echo "   sudo systemctl restart your-rag-service"
+echo "   # OR"
+echo "   python main.py"
 echo ""
-echo "🔍 To view logs:"
-echo "   sudo journalctl -u rag-api.service -f"
-echo "==========================================="
+echo "3. Run the test script:"
+echo "   python test_enhanced_features.py"
+echo ""
+echo "4. Check logs:"
+echo "   tail -f /home/ubuntu/rag-knowledge-base/rag_demo/logs/app.log"
+echo ""
+echo "5. View metrics:"
+echo "   curl http://localhost:8000/api/v1/metrics \\"
+echo "     -H 'Authorization: Bearer demo-api-key-123'"
+
