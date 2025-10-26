@@ -4,20 +4,20 @@
 
 A **production-ready** Retrieval Augmented Generation (RAG) system with **advanced caching**, **rate limiting**, **concurrent processing**, and **real-time monitoring**. Built for scale, security, and performance.
 
-## 🚀 What's New in v4.0
+## What's New in v4.0
 
-### ⚡ Performance Enhancements
+### Performance Enhancements
 - **Multi-Level Caching**: 60-70% faster response times with intelligent caching
 - **Concurrent URL Processing**: 80% faster indexing with async operations
 - **Response Optimization**: Sub-second responses for cached queries
 
-### 🛡️ Production Features
+### Production Features
 - **Rate Limiting**: Per-user, per-endpoint protection against abuse
 - **Structured Logging**: JSON logs with rotation for production monitoring
 - **Performance Metrics**: Real-time system analytics and monitoring
 - **Security Hardening**: Enhanced API key management and validation
 
-### 📊 Monitoring & Analytics
+### Monitoring & Analytics
 - **Real-time Metrics API**: `/api/v1/metrics` endpoint for system insights
 - **Cache Performance Tracking**: Hit rates, response times, and efficiency metrics
 - **System Health Dashboard**: Live component status and performance indicators
@@ -28,9 +28,9 @@ A **production-ready** Retrieval Augmented Generation (RAG) system with **advanc
 
 [![RAG System Demo](RAG_System_Streamlit.png)](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
 
-**🌐 Live Application**: [https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
+**Live Application**: [https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
 
-**🔗 API Backend**: Deployed on AWS EC2 with systemd process management
+**API Backend**: Deployed on AWS EC2 with systemd process management
 
 ---
 
@@ -57,12 +57,12 @@ A **production-ready** Retrieval Augmented Generation (RAG) system with **advanc
 
 This project implements a **comprehensive Retrieval Augmented Generation (RAG) system** with enterprise-grade features including:
 
-- 🎯 **Intelligent caching** for optimal performance
-- 🛡️ **Rate limiting** to prevent abuse
-- 🔄 **Concurrent processing** for faster operations
-- 📊 **Real-time monitoring** and analytics
-- 💬 **Context-aware conversations** with citation support
-- 🔍 **Hybrid search** (BM25 + FAISS + Reranking)
+- **Intelligent caching** for optimal performance
+- **Rate limiting** to prevent abuse
+- **Concurrent processing** for faster operations
+- **Real-time monitoring** and analytics
+- **Context-aware conversations** with citation support
+- **Hybrid search** (BM25 + FAISS + Reranking)
 
 ### Problem Statement
 
@@ -76,9 +76,9 @@ Develop a production-ready RAG system to answer questions based on website conte
 
 ## Key Features
 
-### 🚀 Performance Features
+### Performance Features
 
-#### ⚡ Multi-Level Caching System
+#### Multi-Level Caching System
 ```python
 # Three-tier caching architecture
 - Response Cache: Complete API responses (30-min TTL)
@@ -91,7 +91,7 @@ Develop a production-ready RAG system to answer questions based on website conte
 - Hit rate: 60-70% after warm-up
 ```
 
-#### 🔄 Concurrent URL Processing
+#### Concurrent URL Processing
 ```python
 # Async/await with aiohttp
 - Processes up to 5 URLs simultaneously
@@ -104,7 +104,7 @@ Develop a production-ready RAG system to answer questions based on website conte
 - Time saved: 80% reduction
 ```
 
-### 🛡️ Security & Reliability Features
+### Security & Reliability Features
 
 #### Rate Limiting
 ```python
@@ -133,14 +133,14 @@ Evaluation: 3 requests/10 minutes
 - CloudWatch/ELK ready
 ```
 
-### 💬 Conversational Features
+### Conversational Features
 
 - **Context-Aware**: Maintains conversation history with rolling window
 - **Session Management**: Automatic timeout and cleanup
 - **Citation Support**: Accurate source attribution
 - **Multi-Turn Conversations**: Reference resolution (it, this, that)
 
-### 🔍 Advanced Retrieval
+### Advanced Retrieval
 
 - **Hybrid Search**: BM25 + FAISS + Cross-encoder reranking
 - **Dynamic Indexing**: Real-time content updates
@@ -329,7 +329,7 @@ config.VALID_API_KEYS = {
 
 ### New v4.0 Endpoints
 
-#### 📊 Metrics Endpoint (NEW)
+#### Metrics Endpoint (NEW)
 ```bash
 GET /api/v1/metrics
 Authorization: Bearer your-api-key
@@ -356,7 +356,7 @@ Response:
 }
 ```
 
-#### 🗑️ Cache Management (NEW)
+#### Cache Management (NEW)
 ```bash
 POST /api/v1/cache/clear
 Authorization: Bearer your-api-key
@@ -679,11 +679,11 @@ tail -f logs/app.log | grep concurrent
 We welcome contributions! Areas for improvement:
 
 ### High Priority
-- [ ] Redis-based distributed caching
-- [ ] Prometheus metrics export
-- [ ] Kubernetes deployment configs
-- [ ] Advanced query understanding
-- [ ] Multi-modal RAG (PDFs, images)
+- Redis-based distributed caching
+- Prometheus metrics export
+- Kubernetes deployment configs
+- Advanced query understanding
+- Multi-modal RAG (PDFs, images)
 
 ### Development Setup
 ```bash
@@ -744,11 +744,11 @@ Apache License 2.0 - see [LICENSE](LICENSE)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 **Development Metrics v4.0**
-- Lines of Code: ~8,000 (+60%)
+- Lines of Code: ~5,000 (+60%)
 - Features Added: 12 major enhancements
 - Performance Improvement: 60-98% faster
 - Test Coverage: 85%
-- Production Ready: ✅
+- Production Ready: Yes
 
 ---
 
@@ -757,7 +757,6 @@ Apache License 2.0 - see [LICENSE](LICENSE)
 - [Live Demo](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
 - [API Documentation](http://56.228.63.64:8000/docs)
 - [GitHub Issues](https://github.com/Balaji-itz-me/rag-knowledge-base/issues)
-- [Change Log](CHANGELOG.md)
 
 **Version**: 4.0.0  
 **Status**: Production Ready  
