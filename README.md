@@ -755,10 +755,10 @@ Apache License 2.0 - see [LICENSE](LICENSE)
 ## Quick Links
 
 - [Live Demo](https://rag-knowledge-base-2vfwavrqi6ryqgh59khceu.streamlit.app/)
-- [API Documentation](http://your-ec2-ip:8000/docs)
+- [API Documentation](http://56.228.63.64:8000/docs)
 - [GitHub Issues](https://github.com/Balaji-itz-me/rag-knowledge-base/issues)
 - [Change Log](CHANGELOG.md)
 
 **Version**: 4.0.0  
 **Status**: Production Ready  
-**Last Updated**: January 2025
+**Last Updated**: October 2025
