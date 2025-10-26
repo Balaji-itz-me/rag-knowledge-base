@@ -72,7 +72,7 @@ def init_session_state():
         st.session_state.auth_time = None
         st.session_state.chat_session_id = None
         st.session_state.chat_messages = []
-        st.session_state.processing = False  # CRITICAL: Prevent duplicate processing
+        st.session_state.last_user_message = ""  # Track last message to prevent duplicates
 
 # Call initialization
 init_session_state()
@@ -122,7 +122,7 @@ def make_api_request(endpoint: str, method: str = "GET", data: dict = None):
         return None, f"Error: {str(e)[:100]}"
 
 def authenticate_user():
-    """Handle authentication"""
+    """Handle authentication - NO EXPOSED API KEY"""
     st.markdown('<div class="main-header">🚀 Enhanced RAG System</div>', unsafe_allow_html=True)
     
     st.markdown("""
@@ -147,11 +147,17 @@ def authenticate_user():
         st.session_state.api_key = ""
     
     if not st.session_state.authenticated:
-        st.warning("⚠️ Please enter your API key")
+        st.warning("⚠️ Please enter your API key to access the system")
         
+        # FIXED: No exposed API key - user must provide it
         with st.form("auth_form"):
-            api_key = st.text_input("API Key", type="password", placeholder="Enter API key")
-            submit = st.form_submit_button("🔐 Login")
+            api_key = st.text_input(
+                "API Key", 
+                type="password", 
+                placeholder="Enter your API key",
+                help="Contact administrator for API key access"
+            )
+            submit = st.form_submit_button("🔐 Login", use_container_width=True)
             
             if submit and api_key.strip():
                 with st.spinner("Authenticating..."):
@@ -163,14 +169,31 @@ def authenticate_user():
                             st.session_state.api_key = api_key
                             st.session_state.auth_time = datetime.now()
                             st.success("✅ Authenticated!")
-                            time.sleep(1)
+                            time.sleep(0.5)
                             st.rerun()
                         else:
                             st.error("❌ Invalid API key")
                     except Exception as e:
                         st.error(f"❌ Connection failed: {str(e)}")
         
-        st.info("💡 Demo API Key: `demo-api-key-123`")
+        # System info without API key
+        st.markdown("---")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**✨ System Features:**")
+            st.markdown("- 💬 Conversational AI")
+            st.markdown("- 🧠 Context-aware responses")
+            st.markdown("- 🔍 Hybrid search engine")
+            st.markdown("- 📚 Dynamic indexing")
+        
+        with col2:
+            st.markdown("**⚡ Performance:**")
+            st.markdown("- Multi-level caching")
+            st.markdown("- Rate limiting protection")
+            st.markdown("- Concurrent processing")
+            st.markdown("- Real-time metrics")
+        
         return False
     
     return True
@@ -236,7 +259,7 @@ def show_dashboard():
         st.error(f"Cannot fetch system health: {error}")
 
 def show_chat():
-    """Show chat interface - FIXED to prevent infinite loop"""
+    """Show chat interface - FIXED response display issue"""
     st.markdown("### 💬 Chat Interface")
     
     # Initialize chat session
@@ -253,11 +276,13 @@ def show_chat():
         if st.button("🆕 New Session"):
             st.session_state.chat_session_id = str(uuid.uuid4())
             st.session_state.chat_messages = []
+            st.session_state.last_user_message = ""
             st.rerun()
     
     with col3:
         if st.button("🧹 Clear"):
             st.session_state.chat_messages = []
+            st.session_state.last_user_message = ""
             st.rerun()
     
     # Demo questions
@@ -268,17 +293,16 @@ def show_chat():
         "What is attention mechanism?",
         "How do RAG systems work?",
         "Tell me about transformers",
-        "What are the challenges?"
+        "What are the challenges in AI?"
     ]
     
     for i, question in enumerate(demo_questions):
         with demo_cols[i % 2]:
-            # Use unique key and check processing state
-            if st.button(f"💡 {question}", key=f"demo_q_{i}", disabled=st.session_state.processing):
-                st.session_state.processing = True
-                send_message(question)
-                st.session_state.processing = False
-                st.rerun()
+            # FIXED: Check if this message was already processed
+            if st.button(f"💡 {question}", key=f"demo_q_{i}"):
+                if st.session_state.last_user_message != question:
+                    st.session_state.last_user_message = question
+                    send_message_and_display(question)
     
     # Display chat history
     st.markdown("#### 💭 Conversation")
@@ -312,7 +336,7 @@ def show_chat():
     else:
         st.info("👋 Start by asking a question or using quick start buttons above!")
     
-    # Chat input - CRITICAL: Use form to prevent auto-rerun
+    # Chat input - FIXED to display response immediately
     st.markdown("#### ✍️ Your Message")
     
     with st.form("chat_form", clear_on_submit=True):
@@ -329,19 +353,19 @@ def show_chat():
         with col2:
             use_reranker = st.checkbox("Reranker", value=True)
         
-        # CRITICAL: Only one submit button, check processing state
-        submitted = st.form_submit_button("🚀 Send", disabled=st.session_state.processing)
+        # Submit button
+        submitted = st.form_submit_button("🚀 Send", use_container_width=True)
         
         if submitted and user_input.strip():
-            st.session_state.processing = True
-            send_message(user_input, use_dynamic, use_reranker)
-            st.session_state.processing = False
-            # CRITICAL: Don't call st.rerun() inside form - let it happen naturally
+            # FIXED: Check if this is a duplicate message
+            if st.session_state.last_user_message != user_input:
+                st.session_state.last_user_message = user_input
+                send_message_and_display(user_input, use_dynamic, use_reranker)
 
-def send_message(message: str, use_dynamic: bool = True, use_reranker: bool = True):
-    """Send message to API - FIXED to prevent duplicate calls"""
+def send_message_and_display(message: str, use_dynamic: bool = True, use_reranker: bool = True):
+    """Send message and display response immediately - FIXED"""
     
-    # Add user message immediately
+    # Add user message to display
     st.session_state.chat_messages.append({
         "role": "user",
         "content": message
@@ -356,16 +380,23 @@ def send_message(message: str, use_dynamic: bool = True, use_reranker: bool = Tr
         "top_k": 3
     }
     
-    # Show spinner
-    with st.spinner("🤔 Thinking..."):
-        response_data, error = make_api_request("/api/v1/chat", "POST", chat_data)
+    # Create placeholder for response
+    response_placeholder = st.empty()
+    
+    # Show loading
+    with response_placeholder:
+        with st.spinner("🤔 Thinking..."):
+            response_data, error = make_api_request("/api/v1/chat", "POST", chat_data)
+    
+    # Clear loading and show result
+    response_placeholder.empty()
     
     if response_data:
         assistant_response = response_data["response"]["answer"]["content"]
         sources = response_data["response"].get("sources", [])
         metadata = response_data["response"].get("metadata", {})
         
-        # Add assistant response
+        # Add assistant response to messages
         st.session_state.chat_messages.append({
             "role": "assistant",
             "content": assistant_response,
@@ -376,12 +407,15 @@ def send_message(message: str, use_dynamic: bool = True, use_reranker: bool = Tr
         # Update session ID
         st.session_state.chat_session_id = response_data.get("session_id", st.session_state.chat_session_id)
         
-        st.success("✅ Response received!")
+        # CRITICAL FIX: Force immediate rerun to display the message
+        st.rerun()
     else:
-        st.error(f"Failed to get response: {error}")
+        # Show error
+        st.error(f"❌ Failed: {error}")
         # Remove the user message if failed
         if st.session_state.chat_messages and st.session_state.chat_messages[-1]["role"] == "user":
             st.session_state.chat_messages.pop()
+        st.rerun()
 
 def show_content_management():
     """Show content management"""
@@ -431,7 +465,7 @@ def show_content_management():
                 height=120
             )
             
-            submit = st.form_submit_button("🚀 Start Indexing")
+            submit = st.form_submit_button("🚀 Start Indexing", use_container_width=True)
             
             if submit and urls_text.strip():
                 urls = [url.strip() for url in urls_text.split('\n') if url.strip()][:5]
@@ -522,7 +556,7 @@ def show_metrics():
         st.rerun()
 
 def main():
-    """Main application - SIMPLIFIED"""
+    """Main application"""
     
     # Check authentication
     if not authenticate_user():
@@ -537,6 +571,7 @@ def main():
         st.session_state.api_key = ""
         st.session_state.chat_messages = []
         st.session_state.chat_session_id = None
+        st.session_state.last_user_message = ""
         st.rerun()
     
     st.sidebar.markdown("---")
@@ -559,7 +594,7 @@ def main():
     
     # Footer
     st.markdown("---")
-    st.caption("🚀 Enhanced RAG System v4.0 | API: http://56.228.63.64:8000")
+    st.caption("🚀 Enhanced RAG System v4.0 | Secure & Optimized")
 
 if __name__ == "__main__":
     main()
