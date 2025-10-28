@@ -253,9 +253,9 @@ def run_all_tests():
     print("="*60)
     
     if passed == total:
-        print("\n🎉 ALL FEATURES WORKING! Your CV claims are now TRUE!")
+        print("\n🎉 ALL FEATURES WORKING!")
     elif passed >= 3:
-        print("\n✅ Most features working! Good enough for interview.")
+        print("\n✅ Most features working!")
     else:
         print("\n⚠️  Some features need attention.")
     
